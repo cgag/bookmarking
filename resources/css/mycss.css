@@ -1,0 +1,56 @@
+body {
+  padding-top: 60px; /* move content below nav bar */
+}
+
+.hidden {
+  display: none;
+}
+
+#sign-up-form {
+  list-style-type: none;
+}
+
+#login-form {
+  list-style-type: none;
+}
+
+input.error {
+  background: #fdd;
+}
+
+.error-list {
+  background: red;
+  border: 2px solid #f66;
+  background: #fdd;
+}
+
+li.current-category {
+  background: #00FF00; 
+}
+
+a.delete-bookmark {
+  color: #FF0000;
+  text-decoration: none;
+}
+
+a.delete-bookmark:hover {
+  color: #BD0000;
+}
+
+.bookmark-wrapper {
+  /*border: 3px solid yellow;*/
+  border-bottom: 1px solid black;
+}
+
+.controls {
+  /*border: 3px solid red;*/
+  float: right;
+}
+
+.bookmark-title {
+  /*border: 3px solid green;*/
+}
+
+.bookmark-url {
+  /*border: 3px solid purple;*/
+}
