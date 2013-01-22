@@ -11,11 +11,11 @@ DONE: -- Link to host if no title
 
 DONE: FIX: when saving a bookmark, it checks if any person has saved the url, not if the current user has svaed the url
 
-bookmarking.curtis.io doesn't work because it's using the db created by the old bookmarking code
-<<<<<<< HEAD
+Don't deploy with the test-db
+- Find a wya to manage multiple dbs
+- Or at least remove the admin account
+
 Make sure localhost isn't hardcoded anywhere
-=======
->>>>>>> 14dce6595f3d393306e3ee52494e4b28a3eb68f5
 Use a better failed-auth handler (don't print the request)
 Can't use "localhost" in bookmarklet in prod, remember to change, use an env variable or something for it?
 reconsile the different passwords on bilbo and laptop
