@@ -117,8 +117,9 @@
                            (login-form "home"))))))
 
 (def footer
-  [:footer "Copyleft whatever"])
+  [:footer "Footer goes here"])
 
+;; TODO: actually put shiv in resources or use CDN
 (def html5-shiv
   "<!--[if lt IE 9]>
   <script src=\"js/html5shiv.js\" media=\"all\"></script>
@@ -150,7 +151,6 @@
              :content "Simple asocial bookmarking service."}]
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1.0"}]
-     html5-shiv
      (include-css "/css/mycss.css")
      (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css")]
     [:body

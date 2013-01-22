@@ -28,13 +28,16 @@
       [:div.container-fluid
        [:div.row-fluid
         [:div.span10
-         [:div#add-new-bookmark (user-link user "/bookmarks/new" "Add bookmark")] 
+         [:div#add-new-bookmark [:h4 (user-link user "/bookmarks/new" "Add bookmark")]] 
          [:div#bookmarks  (bookmark-list (:id user) category)]]
         [:div.span2
-         [:h3 "Categories"]
-         [:div#categories (category-list (:id user) category)]
-         [:div.bookmarklet [:a {:href (bookmarklet (:id user) category)}
-                            (str category " Bookmarklet")]]]]])))
+         [:div#categories 
+          [:h3 "Categories"]
+          (category-list (:id user) category)] 
+         [:div#bookmarklets 
+          [:h4 "Bookmarklet"]
+          [:div.bookmarklet [:a {:href (bookmarklet (:id user) category)}
+                             category]]]]]])))
 
 ;; TODO: actually handle the post request
 (defn edit [user]
