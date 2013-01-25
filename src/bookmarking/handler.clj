@@ -1,12 +1,5 @@
 (ns bookmarking.handler
-  (:require [compojure.core :refer :all]
-            [compojure.response :as resp]
-            [cheshire.core :as json]
-            [clojure.pprint :refer [pprint]]
-            [compojure.handler :as handler]
-            [compojure.route :as route]
-            [korma.db :refer :all]
-            [bookmarking.auth :refer [authorized-user try-user]]
+  (:require [bookmarking.auth :refer [authorized-user try-user]]
             [bookmarking.views.home :as home]
             [bookmarking.views.util :as util]
             [bookmarking.views.users :as users]
@@ -16,6 +9,15 @@
             [bookmarking.models.bookmark :as bm-model]
             [bookmarking.models.url :as url-model]
             [bookmarking.friend.custom-workflows :as custom-workflows]
+            [compojure.core :refer :all]
+            [compojure.response :as resp]
+            [compojure.handler :as handler]
+            [compojure.route :as route]
+            [cheshire.core :as json]
+            [clojure.pprint :refer [pprint]]
+            [clojure.set :as set]
+            [environ.core :as e]
+            [korma.db :refer :all]
             [cemerick.friend :as friend]
             [cemerick.friend [workflows   :as workflows]
                              [credentials :as creds]
@@ -159,15 +161,23 @@
     d.style.display='none';
   }
   
-  setTimeout(clearSaveDiv, 400); 
+  setTimeout(clearSaveDiv, 500); 
   ")
 
 (defn logged-out-js [params]
-  (let [params (select-keys params [:url :userid :category :title])]
-    (str "document.location=\"http://localhost:3000/login?" 
+  (let [params (select-keys params [:url :userid :category :title])
+        host (e/env :bm-host)
+        port (e/env :bm-port)
+        ssl-port (e/env :bm-ssl-port)]
+    (str "document.location=\"" 
+         "http://"
+         host ":" port
+         "/login?" 
          (util/query-str params)
          "\";")))
 
+;; TODO: this allows you to save links to any user as long as you're logged in,
+;; need something like strange-route i think
 (defroutes bookmarklet-route
   (GET "/js/bookmarklet.js"
        req
@@ -175,9 +185,8 @@
          (if-not user
            (logged-out-js (:params req))
            (if (:url (:params req))
-             (let [bm-params (select-keys (:params req) [:url :category :title])
-                   bookmark (bm-model/create! (merge bm-params 
-                                                     {:user-id (:id user)}))] 
+             (let [bm-params (select-keys (:params req) [:url :userid :category :title])
+                   bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
                (if (:errors bookmark)
                  (str "alert('Error(s) saving bookmark: " (apply str (interpose "," (:bookmark (:errors bookmark)))) "');")
                  successful-js))

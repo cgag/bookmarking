@@ -11,6 +11,12 @@ DONE: -- Link to host if no title
 
 DONE: FIX: when saving a bookmark, it checks if any person has saved the url, not if the current user has svaed the url
 
+DONE: FIX: Bookmark seems to save the bookmark for the logged in user, not the user that created the bookmark.
+
+FIX: Bookmarklet route only checks that you're logged in, it doesn't confirm your saving links to the current account
+
+FIX: Something is wrong with encoding https urls. They're being linked to as https//domain.com instead of https://domain.com
+
 Don't deploy with the test-db
 - Find a wya to manage multiple dbs
 - Or at least remove the admin account

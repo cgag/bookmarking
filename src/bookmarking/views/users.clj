@@ -89,10 +89,6 @@
          "newScript.src= scheme +  '//" host ":' + port + '/js/bookmarklet.js?dummy=' + Math.random() + '&url=' + url + '&title=' + title + '&category=' + category + '&userid=' + userid;"
          "document.body.appendChild(newScript);}())")))
 
-;//        var scheme = document.location.protocol;
-;//        var port = (scheme === 'http:') ? 3000 : 8443 
-;//          newScript.src = scheme + '//localhost:' + port + '/js/bookmarklet.js?dummy=' + Math.random()
-;//          + '&url=' + url + '&title=' + title + '&category=' + category + '&userid=' + userid;\n 
 
 ;; TODO: find out why do is a special form?
 ;(defmacro my-do [& exprs]

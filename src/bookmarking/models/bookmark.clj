@@ -19,9 +19,9 @@
 
 (defn bookmark-params [params]
   (let [bm-params (-> params
-                    (select-keys [:user-id :category :title])
-                    (set/rename-keys {:user-id :user_id})
-                    (update-in [:user_id] #(Integer. %)))]
+                      (select-keys [:user-id :category :title])
+                      (set/rename-keys {:user-id :user_id})
+                      (update-in [:user_id] #(Integer. %)))]
     (if (s/blank? (:category bm-params))
       (dissoc bm-params :category)
       bm-params)))
@@ -70,24 +70,24 @@
                (where {:users.id (Integer. user-id)})
                (join entities/users {:bookmarks.user_id :users.id})
                (order :category))
-    (map :category)))
+       (map :category)))
 
 (defn count [user-id]
   (:count (first 
-            (select entities/bookmarks
-                    (aggregate (count :*) :count) 
-                    (where {:users.id (Integer. user-id)})
-                    (join entities/users {:bookmarks.user_id :users.id})
-                    (join entities/urls  {:bookmarks.url_id  :urls.id})))))
+           (select entities/bookmarks
+                   (aggregate (count :*) :count) 
+                   (where {:users.id (Integer. user-id)})
+                   (join entities/users {:bookmarks.user_id :users.id})
+                   (join entities/urls  {:bookmarks.url_id  :urls.id})))))
 
 ;; TODO: user a map instead of positional args
 (defn find-bookmark [user-id url-id & [category]]
   (let [category (or category "default")]
     (first
-      (select entities/bookmarks
-              (where {:url_id  (Integer. url-id)
-                      :user_id (Integer. user-id)
-                      :category category})))))
+     (select entities/bookmarks
+             (where {:url_id  (Integer. url-id)
+                     :user_id (Integer. user-id)
+                     :category category})))))
 
 (defn delete! [user-id url-id]
   (delete entities/bookmarks
@@ -105,8 +105,8 @@
       [true {}])))
 
 (def validate-bookmark (validation-set
-                         (presence-of :url_id)
-                         (presence-of :user_id)
-                         (numericality-of :url_id)
-                         (numericality-of :user_id)
-                         unique-bookmark))
+                        (presence-of :url_id)
+                        (presence-of :user_id)
+                        (numericality-of :url_id)
+                        (numericality-of :user_id)
+                        unique-bookmark))
