@@ -13,7 +13,9 @@ DONE: FIX: when saving a bookmark, it checks if any person has saved the url, no
 
 DONE: FIX: Bookmark seems to save the bookmark for the logged in user, not the user that created the bookmark.
 
-FIX: Bookmarklet route only checks that you're logged in, it doesn't confirm your saving links to the current account
+DONE: FIX: Bookmarklet route only checks that you're logged in, it doesn't confirm your saving links to the current account
+
+FIX: Friend redirects at inappropriate times.  If I use curtis' bookmarklet while logged in as justin, and then am prompted to login as curtis, it will still attempt to rediret me to justin's user page.  Logging in should always redirect to user's page perhaps?
 
 FIX: Something is wrong with encoding https urls. They're being linked to as https//domain.com instead of https://domain.com
 

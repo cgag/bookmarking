@@ -1,5 +1,5 @@
 (ns bookmarking.handler
-  (:require [bookmarking.auth :refer [authorized-user try-user]]
+  (:require [bookmarking.auth :refer [authorized-user try-user valid-id?]]
             [bookmarking.views.home :as home]
             [bookmarking.views.util :as util]
             [bookmarking.views.users :as users]
@@ -20,8 +20,8 @@
             [korma.db :refer :all]
             [cemerick.friend :as friend]
             [cemerick.friend [workflows   :as workflows]
-                             [credentials :as creds]
-                             [util :as friend-util]]))
+             [credentials :as creds]
+             [util :as friend-util]]))
 
 ;; TODO: should it redirect to /u or something like instapaper?  Bad semanticlaly
 ;; to have "/" do different things?
@@ -54,10 +54,6 @@
 (defroutes strange-routes
   (POST "/:user-id/bookmarks"
         [user-id :as req]
-        ;; TODO: user something like authorized user but do all this
-        ;; instead of throwing unauthorized
-        ;; TODO: Or maybe authorize user should just use this code and
-        ;; render login this way? What would we miss out on?
         ;; TODO: ensure sure i can't be logged in as curtis and post to brian
         (try-user req
           (if-not user
@@ -74,14 +70,14 @@
                   (users/show user))))))))
 
 ;(defroutes strange-routes
-  ;(POST "/:user-id/bookmarks"
-        ;[user-id :as req]
-        ;(println "matched post to bookmarks")
-        ;(authorized-user user-id req
-          ;(let [bookmark (bm-model/create! (:params req))]
-            ;(if (:errors bookmark)
-              ;(bookmarks/new user-id (merge bookmark (:params req)))
-              ;(users/show user))))))
+;(POST "/:user-id/bookmarks"
+;[user-id :as req]
+;(println "matched post to bookmarks")
+;(authorized-user user-id req
+;(let [bookmark (bm-model/create! (:params req))]
+;(if (:errors bookmark)
+;(bookmarks/new user-id (merge bookmark (:params req)))
+;(users/show user))))))
 
 (defroutes private-user-routes
   (GET "/:user-id" ;; make sure admin can access all of them
@@ -142,10 +138,10 @@
 ;'line-height: 1.0; letter-spacing: normal; font-variant: normal; font-style: normal;'
 ;;
 ;o.setAttribute('style',
-                 ;'position: fixed; z-index: 2147483647; left: 0; top: 0; width: 100%; height: 100%; font-size: 30px; ' +
-                 ;'opacity: 0; -webkit-transition: opacity 0.25s linear; text-align: center; ' +
-                 ;'padding: 200px 0 0 0; margin: 0; background-color: #000; color: #ccc; ' +
-                 ;textStyle)
+;'position: fixed; z-index: 2147483647; left: 0; top: 0; width: 100%; height: 100%; font-size: 30px; ' +
+;'opacity: 0; -webkit-transition: opacity 0.25s linear; text-align: center; ' +
+;'padding: 200px 0 0 0; margin: 0; background-color: #000; color: #ccc; ' +
+;textStyle)
 ;document.body.appendChild(o);" 
 
 (def successful-js
@@ -156,11 +152,11 @@
   d.style.color='white';
   d.innerHTML='<br/><br/><br/><br/><br/><br/><br/>Saving...'
   document.body.appendChild(d);
-  
+
   var clearSaveDiv = function(){
-    d.style.display='none';
+  d.style.display='none';
   }
-  
+
   setTimeout(clearSaveDiv, 500); 
   ")
 
@@ -178,24 +174,28 @@
 
 ;; TODO: this allows you to save links to any user as long as you're logged in,
 ;; need something like strange-route i think
+;; TODO: authorized user isn't good sincethis needs to return JS, infact, 
+;; logged-out-js seems appropriate, just need to ditch the macro
 (defroutes bookmarklet-route
   (GET "/js/bookmarklet.js"
        req
        (try-user req
          (if-not user
            (logged-out-js (:params req))
-           (if (:url (:params req))
-             (let [bm-params (select-keys (:params req) [:url :userid :category :title])
-                   bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
-               (if (:errors bookmark)
-                 (str "alert('Error(s) saving bookmark: " (apply str (interpose "," (:bookmark (:errors bookmark)))) "');")
-                 successful-js))
-             "alert('No url.');")))))
+           (if (valid-id? (:userid (:params req)) (friend/identity req)) 
+             (if (:url (:params req))
+               (let [bm-params (select-keys (:params req) [:url :userid :category :title])
+                     bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
+                 (if (:errors bookmark)
+                   (str "alert('Error(s) saving bookmark: " (apply str (interpose "," (:bookmark (:errors bookmark)))) "');")
+                   successful-js))
+               "alert('No url.');")
+             (logged-out-js (:params req)))))))
 
 ;(home/login nil {:ref-req 
-                 ;(select-keys req [:params 
-                                   ;:request-method 
-                                   ;:uri])})
+;(select-keys req [:params 
+;:request-method 
+;:uri])})
 ;
 ;; TODO: use context for :user-id portion as well, and enforce #"[0-9]+"
 ;; TODO: why am i required to be logged in to register?
