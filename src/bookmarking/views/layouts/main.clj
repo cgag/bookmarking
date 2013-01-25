@@ -6,7 +6,7 @@
             [bookmarking.views.util :refer [empty->nil]]))
 
 (defn not-blank [s]
-  (when (not (clojure.string/blank? s))
+  (when-not (clojure.string/blank? s)
     s))
 
 (defn placeholder [v default]

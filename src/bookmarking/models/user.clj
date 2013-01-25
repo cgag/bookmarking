@@ -84,7 +84,7 @@
   (let [get-f (if (vector? attribute) get-in get)]
     (fn [m]
       (let [v (get-f m attribute)]
-        (if (not (or (empty? v) (s/blank? v))) 
+        (if-not (or (empty? v) (s/blank? v)) 
           ((validation-fn attribute) m)
           [true {}])))))
 

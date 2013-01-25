@@ -19,7 +19,7 @@
     (insert entities/users
             (values (merge {:username username
                             :password (creds/hash-bcrypt username)}
-                           (when (= (rand-int 2) 0)
+                           (when (zero? (rand-int 2))
                              {:email (str username "@gmail.com")}))))))
 
 (defn add-admin []
@@ -42,7 +42,7 @@
                       {:user_id user-id 
                        :url_id url-id
                        :title (:url (url/by-id url-id))}
-                      (when (= (rand-int 2) 0)
+                      (when (zero? (rand-int 2))
                         {:category "testcat"}))))))
 
 (defn seed []

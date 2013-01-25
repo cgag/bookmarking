@@ -64,13 +64,13 @@
             (order :created_at :DESC))))
 
 (defn categories [user-id]
-  (->> (select entities/bookmarks
+  (map :category
+       (select entities/bookmarks
                (modifier "distinct")
                (fields :category)
                (where {:users.id (Integer. user-id)})
                (join entities/users {:bookmarks.user_id :users.id})
-               (order :category))
-       (map :category)))
+               (order :category))))
 
 (defn count [user-id]
   (:count (first 

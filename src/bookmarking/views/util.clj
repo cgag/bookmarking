@@ -35,5 +35,5 @@
     (apply str)))
 
 (defn empty->nil [coll]
-  (when-not (empty? coll)
+  (when (seq coll)
     coll))
