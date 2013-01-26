@@ -16,7 +16,7 @@
 (defn absolute-url
   "Ensure a url starts with http://"
   [url]
-  (if-not (.startsWith url "http://")
+  (if-not (re-find #"^http(s)?://" "http://www.butts.com")
     (str "http://" url)
     url))
 

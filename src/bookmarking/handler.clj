@@ -1,7 +1,6 @@
 (ns bookmarking.handler
   (:require [bookmarking.auth :refer [authorized-user try-user valid-id?]]
-            [bookmarking.views.home :as home]
-            [bookmarking.views.util :as util]
+            [bookmarking.views.home :as home] [bookmarking.views.util :as util]
             [bookmarking.views.users :as users]
             [bookmarking.views.bookmarks :as bookmarks]
             [bookmarking.views.layouts.main :refer [main-layout]]
@@ -16,6 +15,7 @@
             [cheshire.core :as json]
             [clojure.pprint :refer [pprint]]
             [clojure.set :as set]
+            [clojure.string :as s]
             [environ.core :as e]
             [korma.db :refer :all]
             [cemerick.friend :as friend]
@@ -180,17 +180,16 @@
   (GET "/js/bookmarklet.js"
        req
        (try-user req
-         (if-not user
-           (logged-out-js (:params req))
-           (if (valid-id? (:userid (:params req)) (friend/identity req)) 
-             (if (:url (:params req))
-               (let [bm-params (select-keys (:params req) [:url :userid :category :title])
-                     bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
-                 (if (:errors bookmark)
-                   (str "alert('Error(s) saving bookmark: " (apply str (interpose "," (:bookmark (:errors bookmark)))) "');")
-                   successful-js))
-               "alert('No url.');")
-             (logged-out-js (:params req)))))))
+         (if (and user (valid-id? (:userid (:params req)) (friend/identity req)))
+           (if (:url (:params req))
+             (let [bm-params (select-keys (:params req) [:url :userid :category :title])
+                   bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
+               (println "bookmarklet route params: " (:params req))
+               (if (:errors bookmark)
+                 (str "alert('Error(s) saving bookmark: " (s/join "," (:bookmark (:errors bookmark))) "');")
+                 successful-js))
+             "alert('No url.');")
+             (logged-out-js (:params req))))))
 
 ;(home/login nil {:ref-req 
 ;(select-keys req [:params 
