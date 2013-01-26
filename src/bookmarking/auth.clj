@@ -6,7 +6,6 @@
   "Return true if the user id value from the request/url is equal to the 
   currently authenticated user's identity, or the current user is an admin"
   [param-id identity]
-  (println "in valid-id: req-id: " param-id ", identity: " )
   (let [current-id (:identity (friend/current-authentication identity))]
     (or (friend/authorized? #{::user-model/admin} identity)
         (and (friend/authorized? #{::user-model/user} identity)
