@@ -21,6 +21,8 @@ DONE: FIX: Something is wrong with encoding https urls. They're being linked to 
 
 DONE: Make sure localhost isn't hardcoded anywhere
 
+DONE: Get titles for bookmarks if the title is left blank
+
 FIX: Friend redirects at inappropriate times.  If I use curtis' bookmarklet while logged in as justin, and then am prompted to login as curtis, it will still attempt to rediret me to justin's user page.  Logging in should always redirect to user's page perhaps?
 
 Don't deploy with the test-db
@@ -41,12 +43,16 @@ Add searching for bookmarks
 refactor the login workflow
 -- current "successful-js" doesn't seem to work, and also disables all the links and everything, i thinkt he div is being created
    but is invisible for some reason
+
 Allow users to change:
   password
   email
+
 Make categories a real entity so people can create / delete categories manually instead of them being tied to links
 Should urls like /users/1 redirect to /users/1/? Actually, trailing slash doesn't work, why?
 See if we can eliminate the use of select-keys.. just pass full maps?
+
+Write tests?
 
 grepped:
 project.clj:  ;; TODO: stop using this, just manually start server w/ var?
