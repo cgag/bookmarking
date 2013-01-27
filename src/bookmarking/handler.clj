@@ -1,5 +1,6 @@
 (ns bookmarking.handler
-  (:require [bookmarking.auth :refer [authorized-user try-user valid-id?]]
+  (:require [bookmarking.auth :refer [authorized-user try-user
+                                      valid-id? correct-user?]]
             [bookmarking.views.home :as home] [bookmarking.views.util :as util]
             [bookmarking.views.users :as users]
             [bookmarking.views.bookmarks :as bookmarks]
@@ -19,9 +20,10 @@
             [environ.core :as e]
             [korma.db :refer :all]
             [cemerick.friend :as friend]
-            [cemerick.friend [workflows   :as workflows]
+            [cemerick.friend [workflows :as workflows]
              [credentials :as creds]
              [util :as friend-util]]))
+
 
 (defroutes public-routes
   (GET "/" req 
@@ -150,16 +152,16 @@
 (defroutes bookmarklet-route
   (GET "/js/bookmarklet.js"
        req
-       (try-user req
-         (if (and user (valid-id? (:userid (:params req)) (friend/identity req)))
-           (if (:url (:params req))
-             (let [bm-params (select-keys (:params req) [:url :userid :category :title])
-                   bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
-               (if (:errors bookmark)
-                 (str "alert('Error(s) saving bookmark: " (s/join "," (:bookmark (:errors bookmark))) "');")
-                 successful-js))
-             "alert('No url.');")
-             (logged-out-js (:params req))))))
+       (if (correct-user? req (:userid (:params req)))
+         (if (:url (:params req))
+           (let [bm-params (select-keys (:params req) [:url :userid :category :title])
+                 bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
+             (if (:errors bookmark)
+               (str "alert('Error(s) saving bookmark: "
+                    (s/join "," (:bookmark (:errors bookmark))) "');")
+               successful-js))
+           "alert('No url.');")
+         (logged-out-js (:params req)))))
 
 
 (defroutes slow-route
@@ -169,7 +171,6 @@
          [:p "BODY"])))
 
 
-;; TODO: use context for :user-id portion as well, and enforce #"[0-9]+"
 (defroutes app-routes
   slow-route
   public-routes
@@ -192,6 +193,7 @@
        uri
        (when (seq query-string)
          (str \? query-string))))
+
 
 (defn force-login-https [handler]
   (fn [req]
