@@ -8,13 +8,9 @@
             [cemerick.friend.credentials :as creds]
             [compojure.response :as resp]))
 
-;(derive ::admin ::user)
 
 (declare confirm-password optional valid-email validate-user)
 
-;; should also log the user in.. needa  registration workflow?
-;; shouldn't call response methods, just return errors and user or something, 
-;; TODO: DON"T FORGET OT ENCRYPT THE PASSWORD
 (defn create! [params]
   (let [user-map (select-keys params [:username :password 
                                       :password_confirmation :email])
