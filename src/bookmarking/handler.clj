@@ -23,9 +23,6 @@
              [credentials :as creds]
              [util :as friend-util]]))
 
-;; TODO: should it redirect to /u or something like instapaper?  Bad semanticlaly
-;; to have "/" do different things?
-
 (defroutes public-routes
   (GET "/" req 
        (try-user req
@@ -48,8 +45,6 @@
 ;; TODO: if you attempt to post data when not logged in, you'll be prompted to log in, and then redirected,
 ;; but the actual post doesn't seem to happen? (bookmark won't be created)
 ;; -- actually, the redirect goes to the standard login redirect, so maybe the unauthorized-uri doesn't get set?
-;; TODO: maybe have to avoid friend for this?
-;; Ideas:  post, if not logged in then log in, and then do the post request
 (defroutes strange-routes
   (POST "/:user-id/bookmarks"
         [user-id :as req]
@@ -67,56 +62,47 @@
                   (bookmarks/new user-id (merge bookmark (:params req)))
                   (users/show user))))))))
 
-;(defroutes strange-routes
-;(POST "/:user-id/bookmarks"
-;[user-id :as req]
-;(println "matched post to bookmarks")
-;(authorized-user user-id req
-;(let [bookmark (bm-model/create! (:params req))]
-;(if (:errors bookmark)
-;(bookmarks/new user-id (merge bookmark (:params req)))
-;(users/show user))))))
 
 (defroutes private-user-routes
-  (GET "/:user-id" ;; make sure admin can access all of them
+  (GET "/" ;; make sure admin can access all of them
        [user-id :as req] 
        (authorized-user user-id req
          (users/show user (:params req))))
-  (GET "/:user-id/edit"
+  (GET "/edit"
        [user-id :as req]
        (authorized-user user-id req
          (users/edit user-id)))
-  (POST "/:user-id"
+  (POST "/"
         [user-id :as req]
         (authorized-user user-id req
           (users/update! user-id))))
 
 (defroutes private-bookmark-routes
-  (GET "/:user-id/bookmarks/new"
+  (GET "/bookmarks/new"
        [user-id :as req]
        (authorized-user user-id req
          (bookmarks/new user-id req)))
   ;; TODO: do a redirect instead
-  (GET "/:user-id/bookmarks"
+  (GET "/bookmarks"
        [user-id :as req]
        (authorized-user user-id req
          (users/show user (:params req))))
-  (GET  "/:user-id/bookmarks/:bookmark-id"
+  (GET  "/bookmarks/:bookmark-id"
        [user-id bookmark-id :as req]
        (authorized-user user-id req
          (bookmarks/show user-id bookmark-id)))
-  (GET  "/:user-id/bookmarks/:bookmark-id/edit"
+  (GET  "/bookmarks/:bookmark-id/edit"
        [user-id bookmark-id :as req]
        (authorized-user user-id req
          (bookmarks/edit user-id bookmark-id)))
   ;; posting to bookmarks was here
-  (POST "/:user-id/bookmarks/:bookmark-id"
+  (POST "/bookmarks/:bookmark-id"
         [user-id bookmark-id :as req]
         (authorized-user user-id req
           (bookmarks/update! user-id bookmark-id)))
   ;; TODO: some sort of error handling if they tryt o delete something
   ;; that doesn't exist
-  (POST "/:user-id/bookmarks/:url-id/delete"
+  (POST "/bookmarks/:url-id/delete"
         [user-id url-id :as req]
         (authorized-user user-id req
           (let [bookmark (bm-model/find-bookmark user-id url-id)]
@@ -126,20 +112,6 @@
                 (bm-model/delete! user-id url-id)
                 (str "Deleted bookmark for " url)))))))
 
-
-;"var d=document.createElement('div');
-;o.setAttribute('id', 'ovipb614671');
-;var textStyle = 
-;'-webkit-text-size-adjust: none; ' +
-;'font-family: Helvetica, Arial, sans-serif; font-weight: bold; ' +
-;'line-height: 1.0; letter-spacing: normal; font-variant: normal; font-style: normal;'
-;;
-;o.setAttribute('style',
-;'position: fixed; z-index: 2147483647; left: 0; top: 0; width: 100%; height: 100%; font-size: 30px; ' +
-;'opacity: 0; -webkit-transition: opacity 0.25s linear; text-align: center; ' +
-;'padding: 200px 0 0 0; margin: 0; background-color: #000; color: #ccc; ' +
-;textStyle)
-;document.body.appendChild(o);" 
 
 (def successful-js
   "var d=document.createElement('div');
@@ -189,23 +161,19 @@
              "alert('No url.');")
              (logged-out-js (:params req))))))
 
+
 (defroutes slow-route
   (GET "/slow" req 
        (Thread/sleep 10000)
        (main-layout nil "Slow Page Title Woooo"
          [:p "BODY"])))
 
-;(home/login nil {:ref-req 
-;(select-keys req [:params 
-;:request-method 
-;:uri])})
-;
+
 ;; TODO: use context for :user-id portion as well, and enforce #"[0-9]+"
-;; TODO: why am i required to be logged in to register?
 (defroutes app-routes
   slow-route
   public-routes
-  (context "/users" req
+  (context ["/users/:user-id" :user-id #"[0-9]+"] req
            strange-routes
            (friend/wrap-authorize private-user-routes #{::user-model/user})
            (friend/wrap-authorize private-bookmark-routes #{::user-model/user}))
@@ -245,10 +213,6 @@
       (handler req))))
 
 
-;; TODO: redirect to users bookmarks after logging in
-;; -> probably just need custom workflow w/ a redirect?
-;; -> or somehow customize redirect url, sure it's just a map entry
-;; TODO: chaneg login-uri?
 (def app
   (-> app-routes
     (friend/authenticate {:credential-fn (partial creds/bcrypt-credential-fn user-model/credentials)
@@ -258,9 +222,8 @@
                           :login-uri "/login"
                           :unauthorized-handler
                           (fn [& args]
-                            {:status 200 
-                             :body (str "ACCESS DENIED:\n" (pr-str args) "\n\n"
-                                        "Required roles: " )})})
+                            {:status 401
+                             :body "Access Denied"})})
     ;force-login-https
     handler/site))
 
