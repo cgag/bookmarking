@@ -102,8 +102,6 @@
         [user-id bookmark-id :as req]
         (authorized-user user-id req
           (bookmarks/update! user-id bookmark-id)))
-  ;; TODO: some sort of error handling if they tryt o delete something
-  ;; that doesn't exist
   (POST "/bookmarks/:url-id/delete"
         [user-id url-id :as req]
         (authorized-user user-id req
@@ -115,6 +113,7 @@
                 (str "Deleted bookmark for " url)))))))
 
 
+;;TODO: Move to separate file
 (def successful-js
   "var d=document.createElement('div');
   d.setAttribute('style', 'position: fixed; width: 100%; height: 100%;' +
@@ -133,6 +132,8 @@
   setTimeout(clearSaveDiv, 500); 
   ")
 
+;; TODO: create a logged-out redirect function and use this logic
+;; for the strange-route as well
 (defn logged-out-js [params]
   (let [params (select-keys params [:url :userid :category :title])
         host (e/env :bm-host)
@@ -145,10 +146,7 @@
          (util/query-str params)
          "\";")))
 
-;; TODO: this allows you to save links to any user as long as you're logged in,
-;; need something like strange-route i think
-;; TODO: authorized user isn't good sincethis needs to return JS, infact, 
-;; logged-out-js seems appropriate, just need to ditch the macro
+
 (defroutes bookmarklet-route
   (GET "/js/bookmarklet.js"
        req
