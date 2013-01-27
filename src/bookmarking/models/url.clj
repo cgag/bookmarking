@@ -16,7 +16,7 @@
 (defn absolute-url
   "Ensure a url starts with http://"
   [url]
-  (if-not (re-find #"^http(s)?://" "http://www.butts.com")
+  (if-not (re-find #"^http(s)?://" url)
     (str "http://" url)
     url))
 
@@ -28,7 +28,6 @@
 ;; TODO: better way to determine if already exists
 ;; TODO: shoudl all create functions have this behavior of returning the alredy existing one?  Should any?
 (defn create! [params]
-  (println "in create url with params: " params)
   (let [uparams (url-params params)
         errors  (validate-url uparams)]
     (if-not (empty? errors)

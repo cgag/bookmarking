@@ -33,7 +33,6 @@
            (ring.util.response/redirect (str "/users/" (:id user)))
            (home/home user))))
   (GET "/login" req 
-       (println "in /login route: " req)
        (try-user req
          (home/login user (select-keys req [:params]))))
   (GET "/register" req 
@@ -58,7 +57,6 @@
         (try-user req
           (if-not user
             (do
-              (println "No user, rendering login page with ref-req: " req)
               (home/login nil {:ref-req 
                                (select-keys req [:params 
                                                  :request-method 
@@ -120,7 +118,6 @@
   ;; that doesn't exist
   (POST "/:user-id/bookmarks/:url-id/delete"
         [user-id url-id :as req]
-        (println "matched post delete route")
         (authorized-user user-id req
           (let [bookmark (bm-model/find-bookmark user-id url-id)]
             (if-not bookmark
@@ -184,12 +181,17 @@
            (if (:url (:params req))
              (let [bm-params (select-keys (:params req) [:url :userid :category :title])
                    bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id}))] 
-               (println "bookmarklet route params: " (:params req))
                (if (:errors bookmark)
                  (str "alert('Error(s) saving bookmark: " (s/join "," (:bookmark (:errors bookmark))) "');")
                  successful-js))
              "alert('No url.');")
              (logged-out-js (:params req))))))
+
+(defroutes slow-route
+  (GET "/slow" req 
+       (Thread/sleep 10000)
+       (main-layout nil "Slow Page Title Woooo"
+         [:p "BODY"])))
 
 ;(home/login nil {:ref-req 
 ;(select-keys req [:params 
@@ -199,6 +201,7 @@
 ;; TODO: use context for :user-id portion as well, and enforce #"[0-9]+"
 ;; TODO: why am i required to be logged in to register?
 (defroutes app-routes
+  slow-route
   public-routes
   (context "/users" req
            strange-routes

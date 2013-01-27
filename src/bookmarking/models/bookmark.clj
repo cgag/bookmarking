@@ -2,9 +2,12 @@
   (:refer-clojure :exclude [count])
   (:require [korma.core :refer [select modifier where insert
                                 aggregate values fields join
-                                delete dry-run order]]
+                                delete dry-run order update
+                                set-fields]]
             [clojure.string :as s]
             [clojure.set :as set]
+            [net.cgrand.enlive-html :as enlive]
+            [clj-http.client :as http]
             [bookmarking.models.entities :as entities]
             [bookmarking.models.url :as url]
             [validateur.validation :refer [validation-set presence-of
@@ -26,6 +29,21 @@
       (dissoc bm-params :category)
       bm-params)))
 
+
+(defn save-title [bm url & [{:keys [block-for]}]]
+  (let [ftr (future (let [resp  (:body (http/get url {:conn-timeout 5000
+                                                      :socket-timeout 15000}))
+                          html  (enlive/html-resource (java.io.StringReader. resp))
+                          title (-> (enlive/select html [:title])
+                                  first
+                                  :content
+                                  first)]
+                      (update entities/bookmarks
+                              (set-fields {:title title})
+                              (where (select-keys bm [:user_id :url_id])))))]
+    (when block-for
+      (deref ftr block-for "Too long"))))
+
 ;; TODO: stop returning a separate error map, just have an error key in the url map
 ;; -- same for bookmarks and users
 ;; TODO: handle url errors
@@ -33,6 +51,7 @@
 ;; TODO: Don't write url to db if the bookmark is going to fail?
 ;; TODO: handle url already existing, same for all models?
 ;; TODO: maybe validation shouldn't occur in the create function, almost certainly shouldn't in fact
+;; TODO: create a kibit rule for (if-not (empty? x)) -> (if (seq x))
 (defn create! [params]
   (let [url-params (select-keys params [:url])
         url (or (url/by-url (:url url-params)) 
@@ -40,12 +59,14 @@
     (if-not (empty? (:errors url))
       {:errors (:errors url)}
       (let [bm-params (bookmark-params params)
-            bookmark (assoc bm-params :url_id (:id url)) 
-            errors (validate-bookmark bookmark)] 
+            bookmark  (assoc bm-params :url_id (:id url)) 
+            errors    (validate-bookmark bookmark)] 
         (if-not (empty? errors)
           {:errors errors}
-          {:bookmark (insert entities/bookmarks
-                             (values bookmark))})))))
+          (let [new-bm (insert entities/bookmarks
+                               (values bookmark))]
+            (save-title new-bm (:url url))
+            {:bookmark new-bm}))))))
 
 (defn by-id [id]
   (select entities/bookmarks

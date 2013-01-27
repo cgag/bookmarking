@@ -9,6 +9,8 @@ DONE: Actually make the list of bookmarks links
 DONE: -- Add http:// if necessary (where should this occur?  probalby before saving the url)
 DONE: -- Link to host if no title
 
+DONE: seed with valid absolute urls
+
 DONE: FIX: when saving a bookmark, it checks if any person has saved the url, not if the current user has svaed the url
 
 DONE: FIX: Bookmark seems to save the bookmark for the logged in user, not the user that created the bookmark.
@@ -17,17 +19,19 @@ DONE: FIX: Bookmarklet route only checks that you're logged in, it doesn't confi
 
 DONE: FIX: Something is wrong with encoding https urls. They're being linked to as https//domain.com instead of https://domain.com
 
+DONE: Make sure localhost isn't hardcoded anywhere
+
 FIX: Friend redirects at inappropriate times.  If I use curtis' bookmarklet while logged in as justin, and then am prompted to login as curtis, it will still attempt to rediret me to justin's user page.  Logging in should always redirect to user's page perhaps?
 
 Don't deploy with the test-db
 - Find a wya to manage multiple dbs
 - Or at least remove the admin account
 
-Make sure localhost isn't hardcoded anywhere
+Make it prettier
+
 Use a better failed-auth handler (don't print the request)
-Can't use "localhost" in bookmarklet in prod, remember to change, use an env variable or something for it?
+
 reconsile the different passwords on bilbo and laptop
-seed with valid absolute urls
 Force https on login page
 
 Add some sort of indication that the page is being saved / is saved a la instapaper
