@@ -23,6 +23,12 @@ DONE: Make sure localhost isn't hardcoded anywhere
 
 DONE: Get titles for bookmarks if the title is left blank
 
+DONE: Use a better failed-auth handler (don't print the request)
+
+DONE: use context for :user-id portion as well, and enforce #"[0-9]+"
+
+DONE: Move db password, keystore password to environmental variables, checkout weavejester's environ lib
+
 FIX: Friend redirects at inappropriate times.  If I use curtis' bookmarklet while logged in as justin, and then am prompted to login as curtis, it will still attempt to rediret me to justin's user page.  Logging in should always redirect to user's page perhaps?
 
 Don't deploy with the test-db
@@ -31,14 +37,10 @@ Don't deploy with the test-db
 
 Make it prettier
 
-Use a better failed-auth handler (don't print the request)
-
 reconsile the different passwords on bilbo and laptop
 Force https on login page
 
 Add some sort of indication that the page is being saved / is saved a la instapaper
-Move db password, keystore password to environmental variables, checkout weavejester's environ lib
-
 Add searching for bookmarks
 refactor the login workflow
 -- current "successful-js" doesn't seem to work, and also disables all the links and everything, i thinkt he div is being created
@@ -69,7 +71,6 @@ src/bookmarking/handler.clj:        ;; TODO: Or maybe authorize user should just
 src/bookmarking/handler.clj:        ;; TODO: ensure sure i can't be logged in as curtis and post to brian
 src/bookmarking/handler.clj:  ;; TODO: do a redirect instead
 src/bookmarking/handler.clj:  ;; TODO: some sort of error handling if they tryt o delete something
-src/bookmarking/handler.clj:;; TODO: use context for :user-id portion as well, and enforce #"[0-9]+"
 src/bookmarking/handler.clj:;; TODO: why am i required to be logged in to register?
 src/bookmarking/handler.clj:;; TODO: redirect to users bookmarks after logging in
 src/bookmarking/handler.clj:;; TODO: chaneg login-uri?
