@@ -22,22 +22,24 @@
 ;; probably the latter, but currently teh former
 ;; TODO: make functions like bookmark-list take either the id or the user map itself
 ;; TODO: create a function for makingl inks of the form (str "/users/" (:id user))
-(defn show [user & [{:keys [category]}]]
-  (let [category (or category "default")] 
+(defn show [user & [{:keys [category-id]}]]
+  (let [category-id (or category-id 1)] 
     (main-layout user (str (:username user) "'s stuff") 
       [:div.container-fluid
        [:div.row-fluid
         [:div.span10
          [:div#add-new-bookmark [:h4 (user-link user "/bookmarks/new" "Add bookmark")]] 
-         [:div#bookmarks  (bookmark-list (:id user) category)]]
+         [:div#bookmarks  (bookmark-list (:id user) category-id)]]
         [:div.span2
          [:div#categories 
           [:h3 "Categories"]
-          (category-list (:id user) category)] 
+          (category-list (:id user) category-id)] 
          [:div#bookmarklets 
           [:h4 "Bookmarklet"]
-          [:div.bookmarklet [:a {:href (bookmarklet (:id user) category)}
-                             category]]]]]])))
+          [:div.bookmarklet [:a {:href (bookmarklet (:id user) category-id)}
+                             category-id
+                             ;; TODO: anchor texts hould be category name, not id
+                             ]]]]]])))
 
 ;; TODO: actually handle the post request
 (defn edit [user]
@@ -55,9 +57,9 @@
 (defn update! [req]
   (html [:p "idk how to handle POST requests"]))
 
-(defn bookmark-list [user-id & [category]]
+(defn bookmark-list [user-id & [category-id]]
   [:div.bookmark-list
-   (let [bookmarks (bm-model/bookmarks user-id {:category category})]
+   (let [bookmarks (bm-model/bookmarks user-id {:category-id category-id})]
      (for [bm bookmarks]
        (bm-views/display-bookmark bm)))])
 
@@ -66,14 +68,14 @@
 ;; TODO: change category with ajax / pushstate
 (defn category-list [user-id & [current-cat]]
   (let [current-cat (or current-cat "default")]
-    (for [category (bm-model/categories user-id)]
-      [:li (when (= category current-cat)
+    (for [category-id (bm-model/categories user-id)]
+      [:li (when (= category-id current-cat)
              {:class "current-category"}) 
-       (link-to (str "?category=" category) category)])))
+       (link-to (str "?category=" category-id) category-id)])))
 
 ;; TODO: category links dont' work when you're viwing the profile on "/" due to trying to view the homepage while logged in
 ;; TODO: Make sure the function to detect if bookmark already exists says no if the bookmark already exists but is in a different category
-(defn bookmarklet [user-id category]
+(defn bookmarklet [user-id category-id]
   (let [host (e/env :bm-host)
         port (e/env :bm-port)
         ssl-port (e/env :bm-ssl-port)]
@@ -81,7 +83,7 @@
          var newScript = document.createElement('scr' + 'ipt');
          var url = encodeURIComponent(document.location.href);
          var title = encodeURIComponent(document.title);
-         var category = encodeURIComponent('" category "');"
+         var category = encodeURIComponent('" category-id "');"
          "var userid = encodeURIComponent('" user-id "');"
          "var scheme = document.location.protocol;"
          "var port = (scheme === 'http:') ? '" port "' : '" ssl-port "';"

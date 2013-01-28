@@ -22,12 +22,10 @@
 
 (defn bookmark-params [params]
   (let [bm-params (-> params
-                      (select-keys [:user-id :category :title])
+                      (select-keys [:user-id :category_id :title])
                       (set/rename-keys {:user-id :user_id})
                       (update-in [:user_id] #(Integer. %)))]
-    (if (s/blank? (:category bm-params))
-      (dissoc bm-params :category)
-      bm-params)))
+    bm-params))
 
 
 (defn save-title [bm url & [{:keys [block-for]}]]
@@ -75,23 +73,19 @@
 ;; TODO: I shouldn't ahve to specify clojure.core/or here should I?  Or am I just really doing things wrong
 ;; TODO: should this be in the user model?
 ;; TODO: The bookmarks are unordered, should list by time saved. Which means we need to actually store time created
-(defn bookmarks [user-id & [{:keys [category]}]]
-  (let [category (or category "default")] 
-    (select entities/bookmarks
-            (where {:users.id (Integer. user-id)
-                    :category category})
-            (join entities/users {:bookmarks.user_id :users.id})
-            (join entities/urls  {:bookmarks.url_id :urls.id})
-            (order :created_at :DESC))))
+(defn bookmarks [user-id & [{:keys [category-id]}]]
+  (select entities/bookmarks
+          (where (merge
+                  {:user_id (Integer. user-id)}
+                  (when category-id {:category_id category-id})))
+          (order :created_at :DESC)))
 
 (defn categories [user-id]
-  (map :category
-       (select entities/bookmarks
-               (modifier "distinct")
-               (fields :category)
-               (where {:users.id (Integer. user-id)})
-               (join entities/users {:bookmarks.user_id :users.id})
-               (order :category))))
+  (map :category_id
+       (select entities/users-categories
+               (fields :category_id)
+               (where {:user_id (Integer. user-id)})
+               (order :category_id))))
 
 (defn count [user-id]
   (:count (first 
@@ -102,25 +96,26 @@
                    (join entities/urls  {:bookmarks.url_id  :urls.id})))))
 
 ;; TODO: user a map instead of positional args
-(defn find-bookmark [user-id url-id & [category]]
-  (let [category (or category "default")]
-    (first
-     (select entities/bookmarks
-             (where {:url_id  (Integer. url-id)
-                     :user_id (Integer. user-id)
-                     :category category})))))
+(defn find-bookmark [user-id url-id category_id]
+  (first
+   (select entities/bookmarks
+           (where {:url_id   (Integer. url-id)
+                   :user_id  (Integer. user-id)
+                   :category_id (Integer. category_id)}))))
 
-(defn delete! [user-id url-id]
+(defn delete! [user-id url-id & [{:keys [category-id]}]]
   (delete entities/bookmarks
-          (where {:user_id (Integer. user-id)
-                  :url_id  (Integer. url-id)})))
+          (where (merge
+                  {:user_id (Integer. user-id)
+                   :url_id  (Integer. url-id)}
+                  (when category-id {:category_id category-id})))))
 
 ;; validations
 
 ;; not sure exactly how to go about this.  Need to convert params to nil if blank?
 (defn unique-bookmark [bm]
-  (let [{:keys [user_id url_id category]} bm
-        from-db (find-bookmark user_id url_id category)]
+  (let [{:keys [user_id url_id category_id]} bm
+        from-db (find-bookmark user_id url_id category_id)]
     (if from-db
       [false {:bookmark #{"already exists."}}]
       [true {}])))
@@ -128,6 +123,8 @@
 (def validate-bookmark (validation-set
                         (presence-of :url_id)
                         (presence-of :user_id)
+                        (presence-of :category_id)
                         (numericality-of :url_id)
                         (numericality-of :user_id)
+                        (numericality-of :category_id)
                         unique-bookmark))

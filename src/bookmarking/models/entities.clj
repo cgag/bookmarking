@@ -17,6 +17,12 @@
 
 (defentity users)
 (defentity urls)
+(defentity categories)
+
+(defentity users-categories
+  (table :users_categories)
+  (has-one users {:fk :user_id})
+  (has-one categories {:fk :category_id}))
 
 (defentity bookmarks
   (has-one users {:fk :user_id})

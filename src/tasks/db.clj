@@ -8,18 +8,24 @@
             [bookmarking.models.url      :as url]
             [cemerick.friend [credentials :as creds]]))
 
+(defmacro with-probability [p & body]
+  `(when (< (rand-int 100) (* 100 ~p))
+     ~@body))
+
 (def usernames ["curtis" "stephen" "brian" "henry" "justin" "user"])
 (def urls (for [url ["example.com" "foobar.com" "google.com" "yahoo.com"
                      "youtube.com" "reddit.com" "news.ycombinator.com"
                      "facebook.com"]]
             (str "http://" url)))
 
+(def categories ["default" "category1" "category2" "category3"])
+
 (defn add-users []
   (doseq [username usernames]
     (insert entities/users
             (values (merge {:username username
                             :password (creds/hash-bcrypt username)}
-                           (when (zero? (rand-int 2))
+                           (with-probability 1/2
                              {:email (str username "@gmail.com")}))))))
 
 (defn add-admin []
@@ -36,25 +42,37 @@
 (defn add-bookmarks []
   (doseq [user-id (range 1 (inc (count usernames)))
           url-id (take (inc (rand-int (count urls)))
-                       (shuffle (range 1 (inc (count urls)))))]
+                       (shuffle (range 1 (inc (count urls)))))
+          cat-id [(inc (rand-int (count categories)))]]
     (insert entities/bookmarks
             (values (merge
                       {:user_id user-id 
                        :url_id url-id
-                       :title (:url (url/by-id url-id))}
-                      (when (zero? (rand-int 2))
-                        {:category "testcat"}))))))
+                       :title (:url (url/by-id url-id))
+                       :category_id cat-id})))))
+
+(defn add-categories []
+  (doseq [category categories]
+    (insert entities/categories
+            (values {:category category}))))
+
+(defn add-users-categories []
+  (doseq [user-id (range 1 (inc (count usernames)))
+          cat-id (range 1 (inc (rand-int 3)))]
+    (insert entities/users-categories
+            (values {:user_id user-id
+                     :category_id cat-id}))))
 
 (defn seed []
   (add-users)
   (add-admin)
+  (add-categories)
+  (add-users-categories)
   (add-urls)
   (add-bookmarks))
 
 (defn clear []
-  (delete entities/users)
-  (delete entities/urls)
-  (delete entities/bookmarks))
+  )
 
 (defn rebuild []
   (rollback :all)
