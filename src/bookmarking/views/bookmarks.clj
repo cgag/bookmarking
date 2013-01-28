@@ -39,14 +39,14 @@
 
 ;; TODO: host and url are the same, this needs reorganized
 (defn display-bookmark [bookmark]
-  (let [{:keys [user_id url_id description title]} bookmark
+  (let [{:keys [user_id url_id description title category_id]} bookmark
         url (:url (url/by-id url_id))
         host (host url)]
     [:div {:class "bookmark-wrapper"}
      [:div.controls (link-to {:class "delete-bookmark"
                               :title "Delete Bookmark"}
                              (str "/users/" user_id 
-                                  "/bookmarks/" url_id "/delete")
+                                  "/bookmarks/" url_id "/delete?category=" category_id)
                              "&#10006;")]
      [:div.bookmark-title (link-to {:class "bookmark"} url title)]
      [:div {:class "bookmark-description"} description]

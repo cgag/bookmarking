@@ -22,9 +22,12 @@
 
 (defn bookmark-params [params]
   (let [bm-params (-> params
-                      (select-keys [:user-id :category_id :title])
-                      (set/rename-keys {:user-id :user_id})
-                      (update-in [:user_id] #(Integer. %)))]
+                      (select-keys [:user-id :category-id :title])
+                      (update-in [:category-id] #(or % 1))
+                      (set/rename-keys {:user-id :user_id
+                                        :category-id :category_id})
+                      (update-in [:user_id] #(Integer. %))
+                      (update-in [:category_id] #(Integer. %)))]
     bm-params))
 
 
@@ -81,11 +84,11 @@
           (order :created_at :DESC)))
 
 (defn categories [user-id]
-  (map :category_id
-       (select entities/users-categories
-               (fields :category_id)
-               (where {:user_id (Integer. user-id)})
-               (order :category_id))))
+  (select entities/users-categories
+          (fields :category_id :categories.category)
+          (where {:user_id (Integer. user-id)})
+          (join entities/categories {:category_id :categories.id})
+          (order :created_at)))
 
 (defn count [user-id]
   (:count (first 
@@ -103,12 +106,11 @@
                    :user_id  (Integer. user-id)
                    :category_id (Integer. category_id)}))))
 
-(defn delete! [user-id url-id & [{:keys [category-id]}]]
+(defn delete! [user-id url-id category-id]
   (delete entities/bookmarks
-          (where (merge
-                  {:user_id (Integer. user-id)
-                   :url_id  (Integer. url-id)}
-                  (when category-id {:category_id category-id})))))
+          (where {:user_id (Integer. user-id)
+                  :url_id  (Integer. url-id)
+                  :category_id (Integer. category-id)})))
 
 ;; validations
 

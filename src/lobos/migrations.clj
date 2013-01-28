@@ -49,6 +49,7 @@
 (defmigration add-table-users-categories
   (up [] (create
           (table :users_categories
+                 (timestamps)
                  (integer :category_id [:refer :categories :id :on-delete :cascade])
                  (integer :user_id     [:refer :users :id :on-delete :cascade])
                  (unique [:user_id :category_id]))))

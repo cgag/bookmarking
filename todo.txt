@@ -33,6 +33,7 @@ FIX: Friend redirects at inappropriate times.  If I use curtis' bookmarklet whil
 
 Make categories a real entity so people can create / delete categories manually instead of them being tied to links
 
+Make categories a part of the url:  /users/1/bookmarks/default/1
 
 Don't deploy with the test-db
 - Find a wya to manage multiple dbs

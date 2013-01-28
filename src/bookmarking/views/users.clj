@@ -6,6 +6,7 @@
             [bookmarking.views.util :refer [user-link]]
             [bookmarking.models.user :as user]
             [bookmarking.models.bookmark :as bm-model]
+            [bookmarking.models.category :as category]
             [bookmarking.views.bookmarks :as bm-views]
             [bookmarking.views.layouts.main :refer [main-layout]]
             [cemerick.friend :as friend]))
@@ -14,32 +15,40 @@
 
 (declare bookmark-list category-list bookmarklet)
 
-(defn new [req]
-  (html [:p "Sign up page"]))
-
 ;; TODO: This either needs access to the request (they all would),
 ;; or logged-in? needs to be passed in, probably as a part of an options map,
 ;; probably the latter, but currently teh former
 ;; TODO: make functions like bookmark-list take either the id or the user map itself
 ;; TODO: create a function for makingl inks of the form (str "/users/" (:id user))
-(defn show [user & [{:keys [category-id]}]]
-  (let [category-id (or category-id 1)] 
+(defn show [user & [{:keys [category]}]]
+  (let [category-id (Integer. (or category 1))
+        cat-name (category/name category-id)
+        user-id (:id user)]
     (main-layout user (str (:username user) "'s stuff") 
       [:div.container-fluid
        [:div.row-fluid
         [:div.span10
          [:div#add-new-bookmark [:h4 (user-link user "/bookmarks/new" "Add bookmark")]] 
-         [:div#bookmarks  (bookmark-list (:id user) category-id)]]
+         [:div#bookmarks  (bookmark-list user-id category-id)]]
         [:div.span2
          [:div#categories 
           [:h3 "Categories"]
-          (category-list (:id user) category-id)] 
+          (category-list user-id category-id)] 
          [:div#bookmarklets 
-          [:h4 "Bookmarklet"]
-          [:div.bookmarklet [:a {:href (bookmarklet (:id user) category-id)}
-                             category-id
-                             ;; TODO: anchor texts hould be category name, not id
-                             ]]]]]])))
+          [:h4.bookmarklet "Bookmarklet"]
+          [:span.icon-question-sign]
+          [:div.bookmarklet
+           [:span.label [:a.bookmarklet {:href (bookmarklet user-id category-id)} cat-name]]]]]]])))
+
+;(bookmarklet-list (:id user))
+
+;; TODO: categories should not be part of bm-model
+;; TODO: should categories be a parm? calling it in cat-list too
+(defn bookmarklet-list [user-id]
+  (for [category (bm-model/categories user-id)
+        :let [cat-id (:category_id category)
+              cat-name (:category category)]]
+    [:div.bookmarklet [:span.label [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]))
 
 ;; TODO: actually handle the post request
 (defn edit [user]
@@ -67,11 +76,12 @@
 ;; should be passed as get params in the url
 ;; TODO: change category with ajax / pushstate
 (defn category-list [user-id & [current-cat]]
-  (let [current-cat (or current-cat "default")]
-    (for [category-id (bm-model/categories user-id)]
-      [:li (when (= category-id current-cat)
-             {:class "current-category"}) 
-       (link-to (str "?category=" category-id) category-id)])))
+  (for [category (bm-model/categories user-id)
+        :let [cat-name (:category category)
+              cat-id   (:category_id category)]]
+    [:li (when (= cat-id current-cat)
+           {:class "current-category"}) 
+     (link-to (str "?category=" cat-id) cat-name)]))
 
 ;; TODO: category links dont' work when you're viwing the profile on "/" due to trying to view the homepage while logged in
 ;; TODO: Make sure the function to detect if bookmark already exists says no if the bookmark already exists but is in a different category

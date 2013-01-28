@@ -54,3 +54,22 @@ a.delete-bookmark:hover {
 .bookmark-url {
   /*border: 3px solid purple;*/
 }
+
+a.bookmarklet {
+    color: white;
+    text-decoration: none;
+}
+
+a.bookmarklet:hover {
+    color: white;
+    text-decoration: none;
+}
+
+span.icon-question-sign {
+    /* float:left; */
+}
+
+h4.bookmarklet {
+    display:inline;
+    padding-right: 5px;
+}

@@ -46,10 +46,10 @@
           cat-id [(inc (rand-int (count categories)))]]
     (insert entities/bookmarks
             (values (merge
-                      {:user_id user-id 
-                       :url_id url-id
-                       :title (:url (url/by-id url-id))
-                       :category_id cat-id})))))
+                     {:user_id user-id 
+                      :url_id url-id
+                      :title (:url (url/by-id url-id))
+                      :category_id cat-id})))))
 
 (defn add-categories []
   (doseq [category categories]
@@ -58,7 +58,7 @@
 
 (defn add-users-categories []
   (doseq [user-id (range 1 (inc (count usernames)))
-          cat-id (range 1 (inc (rand-int 3)))]
+          cat-id (range 1 (inc (count categories)))]
     (insert entities/users-categories
             (values {:user_id user-id
                      :category_id cat-id}))))
