@@ -31,6 +31,10 @@ DONE: Move db password, keystore password to environmental variables, checkout w
 
 FIX: Friend redirects at inappropriate times.  If I use curtis' bookmarklet while logged in as justin, and then am prompted to login as curtis, it will still attempt to rediret me to justin's user page.  Logging in should always redirect to user's page perhaps?
 
+Add a link to add a category
+
+Pass category names in urls instead of ids?
+
 Make categories a real entity so people can create / delete categories manually instead of them being tied to links
 
 Make categories a part of the url:  /users/1/bookmarks/default/1
