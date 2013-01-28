@@ -156,10 +156,8 @@
                  bookmark (bm-model/create! (set/rename-keys bm-params {:userid :user-id
                                                                         :category :category-id}))]
              (if (:errors bookmark)
-               (do
-                 (println "errors saving bookmark: " (:errors bookmark))
-                 (str "alert('Error(s) saving bookmark: "
-                     (s/join "," (:bookmark (:errors bookmark))) "');"))
+               (str "alert('Error(s) saving bookmark: "
+                    (s/join "," (:bookmark (:errors bookmark))) "');")
                successful-js))
            "alert('No url.');")
          (logged-out-js (:params req)))))
