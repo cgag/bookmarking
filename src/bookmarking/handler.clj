@@ -3,11 +3,13 @@
                                       valid-id? correct-user?]]
             [bookmarking.views.home :as home] [bookmarking.views.util :as util]
             [bookmarking.views.users :as users]
+            [bookmarking.views.categories :as categories]
             [bookmarking.views.bookmarks :as bookmarks]
             [bookmarking.views.layouts.main :refer [main-layout]]
             [bookmarking.models.user :as user-model]
             [bookmarking.models.bookmark :as bm-model]
             [bookmarking.models.url :as url-model]
+            [bookmarking.models.category :as cat-model]
             [bookmarking.friend.custom-workflows :as custom-workflows]
             [compojure.core :refer :all]
             [compojure.response :as resp]
@@ -60,7 +62,7 @@
               (authorized-user user-id req
                                (let [bookmark (bm-model/create! (:params req))]
                                  (if (:errors bookmark)
-                                   (bookmarks/new user-id (merge bookmark (:params req)))
+                                   (bookmarks/new user (merge bookmark (:params req)))
                                    (users/show user))))))))
 
 
@@ -82,7 +84,7 @@
   (GET "/bookmarks/new"
        [user-id :as req]
        (authorized-user user-id req
-         (bookmarks/new user-id req)))
+         (bookmarks/new user req)))
   ;; TODO: do a redirect instead
   (GET "/bookmarks"
        [user-id :as req]
@@ -111,6 +113,24 @@
                 (let [url (:url (url-model/by-id (:url_id bookmark)))]
                   (bm-model/delete! user-id url-id category-id)
                   (str "Deleted bookmark for " url)))))))
+
+(defroutes private-category-routes
+  (GET "/categories/"
+       [user-id :as req]
+       (authorized-user user-id req
+                        "Cat list will go here?"))
+  (GET "/categories/new"
+       [user-id :as req] []
+       (authorized-user user-id req
+                        (categories/new user)))
+  (POST "/categories"
+        [user-id :as req]
+        (authorized-user user-id req
+            (let [cat-name (:category (:params req))
+                  category (cat-model/create! user-id cat-name)]
+              (if (:errors category)
+                (categories/new user category)
+                (ring.util.response/redirect (str "/users/" (:id user))))))))
 
 
 ;;TODO: Move to separate file
@@ -176,7 +196,8 @@
   (context ["/users/:user-id" :user-id #"[0-9]+"] req
            strange-routes
            (friend/wrap-authorize private-user-routes #{::user-model/user})
-           (friend/wrap-authorize private-bookmark-routes #{::user-model/user}))
+           (friend/wrap-authorize private-bookmark-routes #{::user-model/user})
+           (friend/wrap-authorize private-category-routes #{::user-model/user}))
   bookmarklet-route
   (friend/logout (ANY "/logout" req (ring.util.response/redirect "/")))
   (route/files "/" {:root "resources"}))

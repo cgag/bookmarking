@@ -33,7 +33,8 @@
         [:div.span2
          [:div#categories 
           [:h3 "Categories"]
-          (category-list user-id category-id)] 
+          (category-list user-id category-id)
+          (user-link user "/categories/new" "Add Category")]
          [:div#bookmarklets 
           [:h4.bookmarklet "Bookmarklet"]
           [:span.icon-question-sign]

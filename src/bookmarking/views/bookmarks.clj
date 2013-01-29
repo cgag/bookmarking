@@ -11,9 +11,9 @@
 
 (declare new-bookmark-form)
 
-(defn new [user-id & [bookmark]]
-  (main-layout nil "new bookmark"
-    (new-bookmark-form user-id bookmark)))
+(defn new [user & [bookmark]]
+  (main-layout user "new bookmark"
+    (new-bookmark-form (:id user) bookmark)))
 
 ;; TODO: handle errors. separate param or key in map?
 ;; TODO: make sure this is secure from people posting to a different
@@ -68,4 +68,4 @@
               [:li (label "title" "Title (optional, will default to the page's actual title)")
                    (text-field "title" title)]
               [:li (label "submit" "")
-                   (submit-button "submit")])]]])
+                   (submit-button "Submit")])]]])

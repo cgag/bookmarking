@@ -32,7 +32,8 @@
           (table :categories
                  (timestamps)
                  (surrogate-key)
-                 (varchar :category 30 :not-null (default "default")))))
+                 (varchar :category 30 :not-null (default "default"))
+                 (unique [:category]))))
   (down [] (drop (table :categories))))
 
 (defmigration add-table-bookmarks
