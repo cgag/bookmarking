@@ -8,6 +8,8 @@
                                            numericality-of length-of
                                            format-of]]))
 
+(declare new-category-form)
+
 (defn new [user & [category]]
   (main-layout user "Create New Category"
                (new-category-form (:id user) category)))
@@ -19,7 +21,7 @@
     [:ul#new-category-form
      (form-to [:post (str "/users/" user-id "/categories")]
               [:li (label "category" "Category: ")
-               (text-field "category" "Category")]
+               (text-field "category" "")]
               [:li (label "submit" "")
                (submit-button "Submit")])]]])
 

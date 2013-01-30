@@ -14,7 +14,11 @@
                  [com.novemberain/validateur "1.2.0"]
                  [environ "0.3.0"]
                  [sandbar/sandbar-auth "0.2.4"]
-                 [clj-http "0.6.3"]]
+                 [clj-http "0.6.3"]
+                 [net.sourceforge.nekohtml/nekohtml "1.9.15"]
+                 [xerces/xercesImpl                  "2.9.1"]
+                 [de.l3s.boilerpipe/boilerpipe "1.2.0"]]
+  :repositories {"boilerpipe" {:url "http://boilerpipe.googlecode.com/svn/repo/"}}
   :dev-dependencies [[ring-serve "0.1.1"]]
   :plugins [[lein-ring "0.7.3"]
             [lein-cljsbuild "0.2.10"]]

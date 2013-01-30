@@ -1,4 +1,5 @@
 (ns bookmarking.models.category
+  (:refer-clojure :exclude [name])
   (:require [bookmarking.models.entities :as entities]
             [korma.core :refer [select where fields join
                                 insert update values]]

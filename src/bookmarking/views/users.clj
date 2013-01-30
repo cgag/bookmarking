@@ -43,6 +43,8 @@
 
 ;(bookmarklet-list (:id user))
 
+;; TODO: Return special message when no bookmarks
+
 ;; TODO: categories should not be part of bm-model
 ;; TODO: should categories be a parm? calling it in cat-list too
 (defn bookmarklet-list [user-id]
@@ -64,14 +66,20 @@
                 [:li (text-field {:placeholder "Confirm New Password"} "new_pass_conf")]
                 [:li (submit-button {:class "btn btn-large btn-primary"} "Save changes")])]]]))
 
+
 (defn update! [req]
   (html [:p "idk how to handle POST requests"]))
 
+
 (defn bookmark-list [user-id & [category-id]]
   [:div.bookmark-list
-   (let [bookmarks (bm-model/bookmarks user-id {:category-id category-id})]
-     (for [bm bookmarks]
-       (bm-views/display-bookmark bm)))])
+   (let [bookmarks (bm-model/bookmarks user-id {:category-id category-id})
+         bm-list (for [bm bookmarks]
+                   (bm-views/display-bookmark bm))]
+     (if (seq bm-list)
+       bm-list
+       [:p "No bookmarks yet for this category."]))])
+
 
 ;; TODO: categories should be links, categories other than default
 ;; should be passed as get params in the url

@@ -10,6 +10,7 @@
             [bookmarking.models.bookmark :as bm-model]
             [bookmarking.models.url :as url-model]
             [bookmarking.models.category :as cat-model]
+            [bookmarking.models.boilerpipe :as boilerpipe]
             [bookmarking.friend.custom-workflows :as custom-workflows]
             [compojure.core :refer :all]
             [compojure.response :as resp]
@@ -25,7 +26,6 @@
             [cemerick.friend [workflows :as workflows]
              [credentials :as creds]
              [util :as friend-util]]))
-
 
 (defroutes public-routes
   (GET "/" req 
@@ -189,10 +189,19 @@
        (main-layout nil "Slow Page Title Woooo"
          [:p "BODY"])))
 
+(defroutes boilerpipe-test
+  (GET "/boilerpipe"
+       req
+       (try-user req
+        (boilerpipe/boilerpipe-view user)))
+  (POST "/boilerpipe"
+        {{:keys [url]} :params}
+        (boilerpipe/handle-post url)))
 
 (defroutes app-routes
   slow-route
   public-routes
+  boilerpipe-test
   (context ["/users/:user-id" :user-id #"[0-9]+"] req
            strange-routes
            (friend/wrap-authorize private-user-routes #{::user-model/user})

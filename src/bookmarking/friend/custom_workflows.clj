@@ -11,6 +11,7 @@
             [bookmarking.views.util :as util]))
 
 
+;;;; TODO: (if (seq errors))
 (defn registration [{:keys [uri request-method params] :as req}]
   (when (and (= "/users" uri)
              (= :post request-method))
