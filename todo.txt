@@ -38,6 +38,8 @@ DONE: Make categories a real entity so people can create / delete categories man
 DONE: FIX:  Give users default category when created
 DONE: FIX:  Can't add category if it exists for ANY user.  If cat already exists, just get its id and add to users_categories.
 
+Allow users to edit bookmarks.
+
 Pass category names in urls instead of ids?
 
 Make categories a part of the url:  /users/1/bookmarks/default/1
@@ -66,74 +68,3 @@ Should urls like /users/1 redirect to /users/1/? Actually, trailing slash doesn'
 See if we can eliminate the use of select-keys.. just pass full maps?
 
 Write tests?
-
-grepped:
-project.clj:  ;; TODO: stop using this, just manually start server w/ var?
-project.clj:  ;; TODO: try using ring-mock
-resources/js/myjs.js:  // TODO: maybe put a spinning clock or something on the screen
-resources/js/myjs.js:  // TODO: try doing this with clojurescript and domina
-resources/js/myjs.js:  // TODO: categories get deleted when they have no links, shoudl they remain?  Would require separate categories table
-src/bookmarking/handler.clj:;; TODO: should it redirect to /u or something like instapaper?  Bad semanticlaly
-src/bookmarking/handler.clj:;; TODO: figure out something clean with the fact that I use -'s while korma expects _'s
-src/bookmarking/handler.clj:;; TODO: if you attempt to post data when not logged in, you'll be prompted to log in, and then redirected,
-src/bookmarking/handler.clj:;; TODO: maybe have to avoid friend for this?
-src/bookmarking/handler.clj:        ;; TODO: user something like authorized user but do all this
-src/bookmarking/handler.clj:        ;; TODO: Or maybe authorize user should just use this code and
-src/bookmarking/handler.clj:        ;; TODO: ensure sure i can't be logged in as curtis and post to brian
-src/bookmarking/handler.clj:  ;; TODO: do a redirect instead
-src/bookmarking/handler.clj:  ;; TODO: some sort of error handling if they tryt o delete something
-src/bookmarking/handler.clj:;; TODO: why am i required to be logged in to register?
-src/bookmarking/handler.clj:;; TODO: redirect to users bookmarks after logging in
-src/bookmarking/handler.clj:;; TODO: chaneg login-uri?
-src/bookmarking/handler.clj:;; TODO: implement searching
-src/bookmarking/friend/custom_workflows.clj:;; TODO: Desperately needs refactoring
-src/bookmarking/friend/custom_workflows.clj:;; TODO: make sure username and password aren't blank/nil. (maybe move this to the credential function
-src/bookmarking/friend/custom_workflows.clj:;; TODO: thing ref-req will never be nil, would be "nil"
-src/bookmarking/friend/custom_workflows.clj:          ;; TODO: if has req info from login form, save the url or whatever before
-src/bookmarking/friend/custom_workflows.clj:              ;; TODO: figure out how to properly handle this redirect, it's going to be ignored.
-src/bookmarking/models/url.clj:;; TODO: SECURITY: Possible concern: the user types javascript into the url, 
-src/bookmarking/models/url.clj:;; TODO: title should be part of bookmark model? 
-src/bookmarking/models/url.clj:;; TODO: not sure checking if it already exists should be done
-src/bookmarking/models/entities.clj:;; TODO: move this outside of file / version control
-src/bookmarking/models/entities.clj:;; TODO: reconcile model names and entity names (entities are currently plural)
-src/bookmarking/models/user.clj:;; TODO: DON"T FORGET OT ENCRYPT THE PASSWORD
-src/bookmarking/models/user.clj:;; TODO: add index on username (and id? is that already done by default?)
-src/bookmarking/models/user.clj:;; TODO: see if there's a stdlib function for this
-src/bookmarking/models/user.clj:;; TODO: use clojure.string/blank? instead of empty?
-src/bookmarking/models/bookmark.clj:;;TODO: should this model only be for validations?  What should getting a 
-src/bookmarking/models/bookmark.clj:;; TODO: stop returning a separate error map, just have an error key in the url map
-src/bookmarking/models/bookmark.clj:;; TODO: handle url errors
-src/bookmarking/models/bookmark.clj:;; TODO: don't allow blank urls
-src/bookmarking/models/bookmark.clj:;; TODO: Don't write url to db if the bookmark is going to fail?
-src/bookmarking/models/bookmark.clj:;; TODO: handle url already existing, same for all models?
-src/bookmarking/models/bookmark.clj:;; TODO: maybe validation shouldn't occur in the create function, almost certainly shouldn't in fact
-src/bookmarking/models/bookmark.clj:;; TODO: I shouldn't ahve to specify clojure.core/or here should I?  Or am I just really doing things wrong
-src/bookmarking/models/bookmark.clj:;; TODO: user a map instead of positional args
-src/bookmarking/auth.clj:;; TODO: take just the req as a paramater
-src/bookmarking/auth.clj:;; TODO: make something like this -- maybe unnecessayr w/ context macro
-src/bookmarking/auth.clj:;; TODO: research heirarchies, confirm doing this in this namespace will work
-src/bookmarking/views/home.clj:;; TODO: (defview symbol [title] body) -> (defn symbol [req & [errors]]
-src/bookmarking/views/users.clj:;; TODO: why are the views plural and the models singular?
-src/bookmarking/views/users.clj:;; TODO: This either needs access to the request (they all would),
-src/bookmarking/views/users.clj:;; TODO: make functions like bookmark-list take either the id or the user map itself
-src/bookmarking/views/users.clj:;; TODO: create a function for makingl inks of the form (str "/users/" (:id user))
-src/bookmarking/views/users.clj:;; TODO: actually handle the post request
-src/bookmarking/views/users.clj:;; TODO: categories should be links, categories other than default
-src/bookmarking/views/users.clj:;; TODO: change category with ajax / pushstate
-src/bookmarking/views/users.clj:;; TODO: category shouldn't need to be set here
-src/bookmarking/views/users.clj:;; TODO: category links dont' work when you're viwing the profile on "/" due to trying to view the homepage while logged in
-src/bookmarking/views/users.clj:;; TODO: Make sure the function to detect if bookmark already exists says no if the bookmark already exists but is in a different category
-src/bookmarking/views/users.clj:;; TODO: find out why do is a special form?
-src/bookmarking/views/bookmarks.clj:;; TODO: handle errors. separate param or key in map?
-src/bookmarking/views/bookmarks.clj:;; TODO: make sure this is secure from people posting to a different
-src/bookmarking/views/layouts/main.clj:;; TODO: need a way to repopulate fields with previous entries
-src/bookmarking/views/layouts/main.clj:;; TODO: Change this to register-form
-src/bookmarking/views/layouts/main.clj:;; TODO: Currently highlighting errors for both fields at once,
-src/bookmarking/views/layouts/main.clj:;; TODO: login should post to somewhere else?
-src/bookmarking/views/layouts/main.clj:;; TODO: make sure ref req gets filled on failed login
-src/bookmarking/views/layouts/main.clj:;; TODO: apple icons?
-src/bookmarking/views/layouts/main.clj:;; TODO: move nav into header?
-src/bookmarking/views/layouts/main.clj:;; TODO: how to do this without polluting the html?
-src/bookmarking/views/layouts/main.clj:;; TODO: just do a dropdown menu for login / sign-up,
-src/bookmarking/views/layouts/main.clj:;; TODO: probably not necessary
-src/lobos/helpers.clj:;; TODO: don't use :refer :all, figure what exactly is used
