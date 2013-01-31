@@ -1,3 +1,4 @@
+;;;; TODO: change to just bookmarking.util
 (ns bookmarking.views.util
   (:require [clojure.string :as s]
             [hiccup.element :refer [link-to]]
@@ -7,7 +8,14 @@
   (-> k
     name
     s/capitalize
-    (s/replace #"_" " ")))
+    (s/replace #"_" " ")
+    (s/replace #"-" " ")))
+
+(defn remove-blanks [m]
+  (into {}
+        (for [[k v] m
+              :when (not (s/blank? v))]
+          [k v])))
 
 (defn error-list [errors]
   (when errors

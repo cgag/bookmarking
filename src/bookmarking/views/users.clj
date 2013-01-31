@@ -3,7 +3,7 @@
             [hiccup.element :refer [link-to]]
             [hiccup.form :refer :all]
             [environ.core :as e]
-            [bookmarking.views.util :refer [user-link]]
+            [bookmarking.views.util :refer [user-link error-list]]
             [bookmarking.models.user :as user]
             [bookmarking.models.bookmark :as bm-model]
             [bookmarking.models.category :as category]
@@ -54,21 +54,19 @@
     [:div.bookmarklet [:span.label [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]))
 
 ;; TODO: actually handle the post request
-(defn edit [user]
+(defn edit [user & [errors]]
   (main-layout user "Change your password"
+    (error-list errors)
     [:div#edit-user-wrapper
      [:fieldset
       [:legend "Password"]
       [:ul#edit-user-form
        (form-to [:post (str "/users/" (:id user))]
-                [:li (text-field {:placeholder "Current Password"} "current_pass")]
-                [:li (text-field {:placeholder "New Passwword"} "new_pass")]
-                [:li (text-field {:placeholder "Confirm New Password"} "new_pass_conf")]
+                [:li (text-field {:placeholder "Current Password"} "current-pass") "(required)"]
+                [:li (text-field {:placeholder (or (:email user) "Email")} "email")]
+                [:li (text-field {:placeholder "New Passwword"} "new-pass")]
+                [:li (text-field {:placeholder "Confirm New Password"} "new-pass-conf")]
                 [:li (submit-button {:class "btn btn-large btn-primary"} "Save changes")])]]]))
-
-
-(defn update! [req]
-  (html [:p "idk how to handle POST requests"]))
 
 
 (defn bookmark-list [user-id & [category-id]]

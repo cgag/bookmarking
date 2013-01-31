@@ -56,8 +56,7 @@
              (= :post request-method))
     (let [{:keys [username password] :as creds} (select-keys params [:username :password])
           ref-req (when (:ref-req params) (read-string (util/de-entify (:ref-req params))))
-          get-params (when (:get-params params) (read-string (util/de-entify (:get-params params))))
-          _ (println "get params: " (pr-str get-params))]
+          get-params (when (:get-params params) (read-string (util/de-entify (:get-params params))))]
       (if-let [user (and username password
                          ((:credential-fn (::friend/auth-config request))
                             (with-meta creds {::friend/workflow ::custom-login})))]

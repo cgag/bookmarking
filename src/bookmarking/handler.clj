@@ -74,11 +74,15 @@
   (GET "/edit"
        [user-id :as req]
        (authorized-user user-id req
-         (users/edit user-id)))
+         (users/edit user)))
   (POST "/"
         [user-id :as req]
         (authorized-user user-id req
-          (users/update! user-id))))
+                         (let [updated (user-model/update! user (:params req))
+                               errors  (:errors updated)]
+                           (if errors
+                             (users/edit user errors)
+                             (ring.util.response/redirect (str "/users/" (:id user))))))))
 
 (defroutes private-bookmark-routes
   (GET "/bookmarks/new"
