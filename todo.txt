@@ -35,7 +35,8 @@ DONE: Add a link to add a category
 
 DONE: Make categories a real entity so people can create / delete categories manually instead of them being tied to links
 
-FIX:  Can't add category if it exists for ANY user.  If cat already exists, just get its id and add to users_categories.
+DONE: FIX:  Give users default category when created
+DONE: FIX:  Can't add category if it exists for ANY user.  If cat already exists, just get its id and add to users_categories.
 
 Pass category names in urls instead of ids?
 

@@ -1,7 +1,7 @@
 (ns bookmarking.models.user
   (:require [clojure.string :as s]
             [korma.core :refer :all]
-            [bookmarking.views.util :as util]
+            [bookmarking.views.util :refer [remove-blanks select-one]]
             [bookmarking.models.entities :as entities]
             [validateur.validation :refer [validation-set presence-of 
                                            valid? invalid? length-of]]
@@ -13,19 +13,25 @@
          validate-user validate-update has-password?
          update-map email-errors credentials)
 
+
 (defn create! [params]
   (let [user-map (select-keys params [:username :password 
                                       :password_confirmation :email])
         errors   (validate-user user-map)]
     (if-not (empty? errors)
       {:errors errors}
-      {:user (insert entities/users
-                     (values (-> user-map
-                               (dissoc    :password_confirmation)
-                               (update-in [:password] creds/hash-bcrypt))))})))
+      (let [user (insert entities/users
+                         (values (-> user-map
+                                     (dissoc    :password_confirmation)
+                                     (update-in [:password] creds/hash-bcrypt))))]
+        ;; All users have "default" category by default
+        (insert entities/users-categories 
+                (values {:user_id (:id user)
+                         :category_id 1}))
+        {:user user}))))
 
 (defn update! [user params]
-  (let [params (util/remove-blanks params)
+  (let [params (remove-blanks params)
         {:keys [current-pass]} params
         updated-attributes (update-map params)]
     (cond
@@ -45,7 +51,7 @@
                                 (update-map params)))))))
 
 (defn update-map [params]
-  (let [params (util/remove-blanks params)
+  (let [params (remove-blanks params)
         {:keys [email new-pass new-pass-conf]} params
         updated-attributes (merge {}
                                   (when email {:email email})
@@ -85,12 +91,12 @@
 
 ;; TODO: add index on username (and id? is that already done by default?)
 (defn by-username [username]
-  (first (select entities/users
-                 (where {:username username}))))
+  (select-one entities/users
+              (where {:username username})))
 
 (defn by-id [id]
-  (first (select entities/users
-                 (where {:id (Integer. id)}))))
+  (select entities/users
+          (where {:id (Integer. id)})))
 
 (defn all []
   (select entities/users))

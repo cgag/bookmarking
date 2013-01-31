@@ -2,7 +2,18 @@
 (ns bookmarking.views.util
   (:require [clojure.string :as s]
             [hiccup.element :refer [link-to]]
-            [cemerick.friend :as friend]))
+            [cemerick.friend :as friend]
+            [korma.core :refer [select fields]]))
+
+;; TODO: I think these may not need to be macros, look into korma's select*
+(defmacro select-field [field entity & body]
+  `(~field (first (select ~entity
+                          (fields [~field])
+                          ~@body))))
+
+(defmacro select-one [entity & body]
+  `(first (select ~entity
+                  ~@body)))
 
 (defn key->field-name [k]
   (-> k

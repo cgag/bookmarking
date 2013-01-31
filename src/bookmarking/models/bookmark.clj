@@ -10,6 +10,7 @@
             [clj-http.client :as http]
             [bookmarking.models.entities :as entities]
             [bookmarking.models.url :as url]
+            [bookmarking.views.util :refer [select-field select-one]]
             [validateur.validation :refer [validation-set presence-of
                                            numericality-of length-of]]))
 
@@ -104,11 +105,10 @@
 
 ;; TODO: user a map instead of positional args
 (defn find-bookmark [user-id url-id category_id]
-  (first
-   (select entities/bookmarks
-           (where {:url_id   (Integer. url-id)
-                   :user_id  (Integer. user-id)
-                   :category_id (Integer. category_id)}))))
+  (select-one entities/bookmarks
+              (where {:url_id   (Integer. url-id)
+                      :user_id  (Integer. user-id)
+                      :category_id (Integer. category_id)})))
 
 (defn delete! [user-id url-id category-id]
   (delete entities/bookmarks
