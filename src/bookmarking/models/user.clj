@@ -46,7 +46,7 @@
 
      :else
      (update entities/users
-             (where {:id(:id user)})
+             (where {:id (:id user)})
              (set-fields (merge {:updated_at (sqlfn now)}
                                 (update-map params)))))))
 

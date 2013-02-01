@@ -20,6 +20,10 @@
   (select-one entities/categories
           (where {:category cat-name})))
 
+(defn by-id [id]
+  (select-one entities/categories
+              (where {:id id})))
+
 (defn create! [user-id cat-name]
   (let [cat-params {:category cat-name
                     :user_id  user-id}

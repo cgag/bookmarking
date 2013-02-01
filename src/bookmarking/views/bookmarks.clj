@@ -6,36 +6,62 @@
             [cemerick.url :as cu]
             [hiccup.core :refer :all]
             [hiccup.element :refer :all]
-            [hiccup.form :refer [form-to text-field 
+            [hiccup.form :refer [form-to text-field hidden-field
                                  submit-button label]]))
 
-(declare new-bookmark-form)
+(declare new-bookmark-form edit-bookmark-form)
 
 (defn new [user & [bookmark]]
   (main-layout user "new bookmark"
     (new-bookmark-form (:id user) bookmark)))
 
-;; TODO: handle errors. separate param or key in map?
-;; TODO: make sure this is secure from people posting to a different
-;; user id
+(defn edit [user url-id cat-id & [errors]]
+  (main-layout user "Edit bookmark"
+               (edit-bookmark-form user url-id cat-id errors)))
 
 (defn all [id]
   (html [:p (str "User " id "'s bookmarks")]))
 
-(defn show [user-id bookmark-id]
-  (str "user-id: " user-id " bookmark-id " bookmark-id))
+(defn show [user-id url-id]
+  (str "user-id: " user-id " url-id " url-id))
 
-(defn edit [user-id bookmark-id]
-  (html [:p (str "Edit page for user-id: " user-id
-                 " bookmark-id: " bookmark-id)]))
-
-(defn update! [req])
 
 (defn host [url]
   (let [host (:host (cu/url url))]
     (if (.startsWith host "www.")
       (subs host 4)
       host)))
+
+(defn bookmark-fields [{:keys [title url category]}]
+  ;; hiccup wants seqs of elements, vector doesn't work
+  (seq [[:li (label "url" "Url")
+         (text-field "url" url)]
+        [:li (label "category" "Category")
+         (text-field "category" category)]
+        [:li (label "title" "Title (optional, will default to the page's actual title)")
+         (text-field "title" title)]
+        [:li (label "submit" "")
+         (submit-button "Submit")]]))
+
+(defn edit-bookmark-form [user url-id cat-id & [{:keys [errors] :as bm}]]
+  (do
+    (println "user: " user)
+    (println "form target: " (str "/users" (:id user) "/bookmarks/" url-id))
+    [:div#edit-bookmark-wrapper
+     (when errors (error-list errors))
+     [:ul#edit-bookmark-form
+      (form-to [:post (str "/users/" (:id user) "/bookmarks/" url-id)]
+               [:li.hidden (hidden-field "current-cat" cat-id)]
+               (bookmark-fields bm))]]))
+
+(defn new-bookmark-form [user-id & [{:keys [errors] :as bm}]]
+  [:div#new-bookmark-wrapper
+   (when errors
+     (error-list errors))
+   [:fieldset
+    [:ul#new-bookmark-form
+     (form-to [:post (str "/users/" user-id "/bookmarks")]
+              (bookmark-fields bm))]]])
 
 ;; TODO: host and url are the same, this needs reorganized
 (defn display-bookmark [bookmark]
@@ -49,23 +75,10 @@
                                   "/bookmarks/" url_id "/delete?category=" category_id)
                              "&#10006;")]
      [:div.bookmark-title (link-to {:class "bookmark"} url title)]
-     [:div {:class "bookmark-description"} description]
-     [:div {:class "bookmark-host" :title url} (if (s/blank? title)
-                                                 (link-to url host)
-                                                 host)]]))
-
-(defn new-bookmark-form [user-id & [{:keys [errors title url category]}]]
-  [:div#new-bookmark-wrapper
-   (when errors
-     (error-list errors))
-   [:fieldset
-    [:ul#new-bookmark-form
-     (form-to [:post (str "/users/" user-id "/bookmarks")]
-              [:li (label "url" "Url")
-                   (text-field "url" url)]
-              [:li (label "category" "Category")
-                   (text-field "category" category)]
-              [:li (label "title" "Title (optional, will default to the page's actual title)")
-                   (text-field "title" title)]
-              [:li (label "submit" "")
-                   (submit-button "Submit")])]]])
+     [:div {:class "bookmark-host" :title url}
+      (if (s/blank? title)
+        (link-to url host)
+        host)
+      [:div.edit (link-to (str "/users/" user_id "/bookmarks/"
+                               url_id "/edit?category=" category_id)
+                          "edit")]]]))

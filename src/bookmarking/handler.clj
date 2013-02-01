@@ -94,19 +94,19 @@
        [user-id :as req]
        (authorized-user user-id req
          (users/show user (:params req))))
-  (GET  "/bookmarks/:bookmark-id"
-       [user-id bookmark-id :as req]
+  (GET  "/bookmarks/:url-id"
+       [user-id url-id :as req]
        (authorized-user user-id req
-         (bookmarks/show user-id bookmark-id)))
-  (GET  "/bookmarks/:bookmark-id/edit"
-       [user-id bookmark-id :as req]
+         (bookmarks/show user-id url-id)))
+  (GET  "/bookmarks/:url-id/edit"
+       [user-id url-id :as req]
        (authorized-user user-id req
-         (bookmarks/edit user-id bookmark-id)))
+         (bookmarks/edit user url-id (:category (:params req)))))
   ;; posting to bookmarks was here
-  (POST "/bookmarks/:bookmark-id"
-        [user-id bookmark-id :as req]
+  (POST "/bookmarks/:url-id"
+        [user-id url-id :as req]
         (authorized-user user-id req
-          (bookmarks/update! user-id bookmark-id)))
+          (bm-model/update! user-id url-id (:params req))))
   (POST "/bookmarks/:url-id/delete"
         [user-id url-id :as req]
         (authorized-user user-id req
@@ -117,6 +117,7 @@
                 (let [url (:url (url-model/by-id (:url_id bookmark)))]
                   (bm-model/delete! user-id url-id category-id)
                   (str "Deleted bookmark for " url)))))))
+
 
 (defroutes private-category-routes
   (GET "/categories/"

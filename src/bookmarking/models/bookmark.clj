@@ -10,7 +10,10 @@
             [clj-http.client :as http]
             [bookmarking.models.entities :as entities]
             [bookmarking.models.url :as url]
-            [bookmarking.views.util :refer [select-field select-one]]
+            [bookmarking.models.category :as cat]
+            [bookmarking.views.util :refer [remove-blanks
+                                            select-field
+                                            select-one]]
             [validateur.validation :refer [validation-set presence-of
                                            numericality-of length-of]]))
 
@@ -19,8 +22,7 @@
 ;; (user/bookmarks user-id) or (bookmark/bookmarks user-id)
 ;; How should has-one/has-many relationships be modeled?
 
-(declare validate-bookmark
-         validate-update)
+(declare validate-bookmark validate-update find-bookmark)
 
 (defn bookmark-params [params]
   (let [bm-params (-> params
@@ -49,11 +51,9 @@
 
 ;; TODO: stop returning a separate error map, just have an error key in the url map
 ;; -- same for bookmarks and users
-;; TODO: handle url errors
 ;; TODO: don't allow blank urls
 ;; TODO: Don't write url to db if the bookmark is going to fail?
 ;; TODO: handle url already existing, same for all models?
-;; TODO: maybe validation shouldn't occur in the create function, almost certainly shouldn't in fact
 ;; TODO: create a kibit rule for (if-not (empty? x)) -> (if (seq x))
 (defn create! [params]
   (let [url-params (select-keys params [:url])
@@ -71,12 +71,39 @@
             (save-title new-bm (:url url))
             {:bookmark new-bm}))))))
 
-;; (defn update! [bookmark-id params]
-;;   ())
+;; TODO: find a cleaner way to do this
+(defn update-params [params]
+  (let [uparams (-> params 
+                    (select-keys [:url :title :category])
+                    remove-blanks)
+        new-url-id      (when (:url uparams)
+                          (:id (or (url/by-url (:url uparams))
+                                   (url/create! {:url (:url uparams)}))))
+        new-category-id (when (:category uparams)
+                          (:category_id (or (cat/by-name (:category uparams))
+                                   (cat/create! (:user-id params) (:category params)))))
+        uparams (if-not new-url-id
+                  uparams
+                  (-> uparams
+                      (dissoc :url)
+                      (assoc :url_id new-url-id)))
+        uparams (if-not new-category-id
+                  uparams
+                  (-> uparams
+                      (dissoc :category)
+                      (assoc :category_id new-category-id)))]
+    uparams))
 
-(defn by-id [id]
-  (select entities/bookmarks
-          (where {:id id})))
+(defn update! [user-id url-id params]
+  (let [current-cat (:current-cat params)
+        current-bm (find-bookmark user-id url-id current-cat)
+        uparams (update-params params)]
+    (update entities/bookmarks
+            (where {:user_id (Integer. user-id)
+                    :url_id  (Integer. url-id)
+                    :category_id (Integer. current-cat)})
+            (set-fields (merge current-bm
+                               uparams)))))
 
 ;; TODO: I shouldn't ahve to specify clojure.core/or here should I?  Or am I just really doing things wrong
 ;; TODO: should this be in the user model?

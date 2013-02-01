@@ -73,3 +73,7 @@ h4.bookmarklet {
     display:inline;
     padding-right: 5px;
 }
+
+.edit {
+    float: right;
+}
