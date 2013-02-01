@@ -38,31 +38,27 @@ DONE: Make categories a real entity so people can create / delete categories man
 DONE: FIX:  Give users default category when created
 DONE: FIX:  Can't add category if it exists for ANY user.  If cat already exists, just get its id and add to users_categories.
 
-Allow users to edit bookmarks.
+DONE: Allow users to edit account info (email, password)
+DONE: Allow users to edit bookmarks.
 
-Pass category names in urls instead of ids?
+Pass category names in urls instead of ids.
+-- dont' put /bookmarks in url, just user /categories/:cat-id
+-- Make categories a part of the url:  /users/1/categories/2
 
-Make categories a part of the url:  /users/1/bookmarks/default/1
-
-Don't deploy with the test-db
-- Find a wya to manage multiple dbs
-- Or at least remove the admin account
-
-Make it prettier
-
-reconsile the different passwords on bilbo and laptop
 Force https on login page
 
-PARTIAL: Add some sort of indication that the page is being saved / is saved a la instapaper
-  -- Make it better.  Why can't I increase the font size?
+Make it prettier
 
 Add searching for bookmarks
 
 refactor the login workflow
 
-Allow users to change:
-  password
-  email
+Don't deploy with the test-db
+- Find a wya to manage multiple dbs
+- Or at least remove the admin account
+
+PARTIAL: Add some sort of indication that the page is being saved / is saved a la instapaper
+  -- Make it better.  Why can't I increase the font size?
 
 Should urls like /users/1 redirect to /users/1/? Actually, trailing slash doesn't work, why?
 See if we can eliminate the use of select-keys.. just pass full maps?
