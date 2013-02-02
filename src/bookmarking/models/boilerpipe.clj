@@ -59,5 +59,5 @@
            (text-field "url")
            (submit-button "Get Article")))
 
-(defn handle-post [url]
+(defn get-url-text [url]
   (get-html (java.net.URL. url)))

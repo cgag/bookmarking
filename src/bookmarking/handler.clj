@@ -195,13 +195,12 @@
          [:p "BODY"])))
 
 (defroutes boilerpipe-test
-  (GET "/boilerpipe"
-       req
+  (GET "/plain-text"
+       {{:keys [url]} :params :as req}
        (try-user req
-        (boilerpipe/boilerpipe-view user)))
-  (POST "/boilerpipe"
-        {{:keys [url]} :params}
-        (boilerpipe/handle-post url)))
+                 (if url
+                   (boilerpipe/get-url-text url)
+                   (boilerpipe/boilerpipe-view user)))))
 
 (defroutes app-routes
   slow-route

@@ -42,8 +42,8 @@ a.delete-bookmark:hover {
   border-bottom: 1px solid black;
 }
 
-.controls {
-  /*border: 3px solid red;*/
+.delete {
+  border: 3px solid red;
   float: right;
 }
 
@@ -74,6 +74,13 @@ h4.bookmarklet {
     padding-right: 5px;
 }
 
-.edit {
+.bm-links {
     float: right;
+    border: 3px solid green;
+}
+
+.bm-links li {
+    border: 1px solid black;
+    display: inline;
+    padding-right: 10px;
 }
