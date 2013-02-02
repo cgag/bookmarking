@@ -67,14 +67,14 @@
   (let [{:keys [user_id url_id description title category_id]} bookmark
         url (:url (url/by-id url_id))
         host (host url)]
-    [:div {:class "bookmark-wrapper"}
-     [:div.delete (link-to {:class "delete-bookmark"
-                            :title "Delete Bookmark"}
-                           (str "/users/" user_id 
-                                "/bookmarks/" url_id "/delete?category=" category_id)
-                           "&#10006;")]
-     [:div.bookmark-title (link-to {:class "bookmark"} url title)]
-     [:div {:class "bookmark-host" :title url}
+    [:div.bookmark-wrapper
+     [:div.bookmark-title (link-to {:class "bookmark"} url title)
+      [:div.delete (link-to {:class "delete-bookmark"
+                             :title "Delete Bookmark"}
+                            (str "/users/" user_id 
+                                 "/bookmarks/" url_id "/delete?category=" category_id)
+                            "&#10006;")]]
+     [:div.bookmark-host {:title url}
       (if (s/blank? title)
         (link-to url host)
         host)
