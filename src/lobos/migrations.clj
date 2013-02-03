@@ -40,9 +40,9 @@
   (up [] (create
           (table :bookmarks
                  (timestamps)
-                 (integer :user_id [:refer :users :id :on-delete :cascade])
-                 (integer :url_id  [:refer :urls  :id :on-delete :cascade])
-                 (integer :category_id [:refer :categories :id :on-delete :cascade])
+                 (integer :user_id     :not-null [:refer :users :id :on-delete :cascade])
+                 (integer :url_id      :not-null [:refer :urls  :id :on-delete :cascade])
+                 (integer :category_id :not-null [:refer :categories :id :on-delete :cascade])
                  (varchar :title 2000)
                  (unique  [:user_id :url_id :category_id :title]))))
   (down [] (drop (table :bookmarks))))
@@ -51,8 +51,8 @@
   (up [] (create
           (table :users_categories
                  (timestamps)
-                 (integer :category_id [:refer :categories :id :on-delete :cascade])
-                 (integer :user_id     [:refer :users :id :on-delete :cascade])
+                 (integer :category_id :not-null [:refer :categories :id :on-delete :cascade])
+                 (integer :user_id     :not-null [:refer :users :id :on-delete :cascade])
                  (unique [:user_id :category_id]))))
   (down [] (drop (table :users_categories))))
 

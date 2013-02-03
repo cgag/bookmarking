@@ -17,7 +17,7 @@
                     friend/current-authentication)]
      ~@body))
 
-;; TODO: take just the req as a paramater
+;; TODO: take just the req as a paramater?
 (defmacro authorized-user
   "Ensures the body is only executed if the current authenticated user's identity
   is equal to the given user id (taken from the url)

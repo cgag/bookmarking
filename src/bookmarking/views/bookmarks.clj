@@ -7,7 +7,8 @@
             [hiccup.core :refer :all]
             [hiccup.element :refer :all]
             [hiccup.form :refer [form-to text-field hidden-field
-                                 submit-button label]]))
+                                 submit-button label]])
+  (:import [java.net URLEncoder]))
 
 (declare new-bookmark-form edit-bookmark-form)
 
@@ -63,9 +64,18 @@
      (form-to [:post (str "/users/" user-id "/bookmarks")]
               (bookmark-fields bm))]]])
 
+(defn my-encode
+  "handle stupid fucking hashbangs, there has to be a better way"
+  [url]
+  (-> url
+      cu/url
+      (update-in [:anchor] cu/url-encode)
+      (update-in [:query] cu/url-encode)
+      str))
+
 (defn display-bookmark [bookmark]
   (let [{:keys [user_id url_id description title category_id]} bookmark
-        url (:url (url/by-id url_id))
+        url (my-encode (:url (url/by-id url_id)))
         host (host url)]
     [:div.bookmark-wrapper
      [:div.bookmark-title (link-to {:class "bookmark"} url title)

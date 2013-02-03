@@ -6,7 +6,7 @@
             [bookmarking.views.util :refer [user-link error-list]]
             [bookmarking.models.user :as user]
             [bookmarking.models.bookmark :as bm-model]
-            [bookmarking.models.category :as category]
+            [bookmarking.models.category :as cat-model]
             [bookmarking.views.bookmarks :as bm-views]
             [bookmarking.views.layouts.main :refer [main-layout]]
             [cemerick.friend :as friend]))
@@ -15,8 +15,9 @@
 (declare bookmark-list category-list bookmarklet)
 
 (defn show [user category-id]
-  (let [cat-name (category/name category-id)
-        user-id  (:id user)]
+  (let [cat-name (cat-model/name category-id)
+        user-id  (:id user)
+        category-id (Integer. category-id)]
     (main-layout user (str (:username user) "'s stuff") 
       [:div.container-fluid
        [:div.row-fluid
@@ -27,7 +28,8 @@
          [:div#categories 
           [:h3 "Categories"]
           (category-list user-id category-id)
-          (user-link user "/categories/new" "Add Category")]
+          (user-link user "/categories/new" "Add Category")
+          (user-link user "/categories" "Manage Categories")]
          [:div#bookmarklets 
           [:h4.bookmarklet "Bookmarklet"]
           [:span.icon-question-sign]
@@ -36,7 +38,7 @@
 
 
 (defn bookmarklet-list [user-id]
-  (for [category (bm-model/categories user-id)
+  (for [category (cat-model/categories user-id)
         :let [cat-id (:category_id category)
               cat-name (:category category)]]
     [:div.bookmarklet
@@ -70,8 +72,8 @@
 
 
 ;; TODO: change category with ajax / pushstate?
-(defn category-list [user-id & [current-cat]]
-  (for [category (bm-model/categories user-id)
+(defn category-list [user-id current-cat]
+  (for [category (cat-model/categories user-id)
         :let [cat-name (:category category)
               cat-id   (:category_id category)]]
     [:li (when (= cat-id current-cat)

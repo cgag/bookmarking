@@ -82,6 +82,10 @@ h4.bookmarklet {
     /* border: 3px solid green; */
 }
 
+ul {
+    margin: 0;
+}
+
 .bm-links ul {
     margin: 0;
 }
@@ -95,4 +99,20 @@ h4.bookmarklet {
 .delete {
   /* border: 3px solid red; */
   float: right;
+}
+
+
+.management {
+    display: inline;
+}
+
+.manage-list {
+ border: 2px solid black;
+}
+.category {
+ border-bottom: 2px solid black;
+}
+
+.name {
+    border: 2x solid blue;
 }

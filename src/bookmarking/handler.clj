@@ -16,12 +16,12 @@
             [compojure.response :as resp]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [cheshire.core :as json]
-            [clojure.pprint :refer [pprint]]
             [clojure.set :as set]
             [clojure.string :as s]
             [environ.core :as e]
             [korma.db :refer :all]
+            [ring.adapter.jetty :refer [run-jetty]]
+            [ring.server.standalone :as ring-server]
             [cemerick.friend :as friend]
             [cemerick.friend [workflows :as workflows]
              [credentials :as creds]
@@ -69,7 +69,7 @@
   (GET "/" ;; make sure admin can access all of them
        [user-id :as req] 
        (authorized-user user-id req
-         (users/show user (:id (cat-model/first user-id)))))
+         (users/show user (:id (cat-model/first-category user-id)))))
   (GET "/categories/:cat-id"
        [user-id cat-id :as req]
        (authorized-user user-id req
@@ -97,7 +97,7 @@
        (authorized-user user-id req
                         (ring.util.response/redirect
                          (str "/users/" user-id
-                              "/categories/" (:id (cat-model/first user-id))))))
+                              "/categories/" (:id (cat-model/first-category user-id))))))
   (GET  "/categories/:cat-id/bookmarks/:url-id/edit"
        [user-id cat-id url-id :as req]
        (authorized-user user-id req
@@ -120,14 +120,18 @@
 
 
 (defroutes private-category-routes
-  (GET "/categories/"
+  (GET "/categories"
        [user-id :as req]
        (authorized-user user-id req
-                        "Cat list will go here?"))
+                        (categories/manage-categories-view user)))
   (GET "/categories/new"
        [user-id :as req] []
        (authorized-user user-id req
                         (categories/new user)))
+  (GET "/categories/:cat-id/edit"
+       [user-id cat-id :as req]
+       (authorized-user user-id req
+                        (categories/edit-category user cat-id)))
   (POST "/categories"
         [user-id :as req]
         (authorized-user user-id req
@@ -135,7 +139,19 @@
                   category (cat-model/create! user-id cat-name)]
               (if (:errors category)
                 (categories/new user category)
-                (ring.util.response/redirect (str "/users/" (:id user))))))))
+                (ring.util.response/redirect (str "/users/" (:id user)))))))
+  (POST "/categories/:cat-id"
+        [user-id cat-id :as req]
+        (authorized-user user-id req
+                         (let [updated-cat (cat-model/update! user-id cat-id (:params req))
+                               errors (:errors updated-cat)]
+                           (if errors
+                             (categories/edit-category user cat-id errors)
+                             (ring.util.response/redirect (str "/users/" user-id "/categories"))))))
+  (POST "/categories/:cat-id/delete"
+        [user-id cat-id :as req]
+        (authorized-user user-id req
+                         (cat-model/delete! user-id cat-id))))
 
 
 ;;TODO: Move to separate file
@@ -194,7 +210,7 @@
        (main-layout nil "Slow Page Title Woooo"
          [:p "BODY"])))
 
-(defroutes boilerpipe-test
+(defroutes boilerpipe
   (GET "/plain-text"
        {{:keys [url]} :params :as req}
        (try-user req
@@ -205,13 +221,14 @@
 (defroutes app-routes
   slow-route
   public-routes
-  boilerpipe-test
+  boilerpipe
   (context ["/users/:user-id" :user-id #"[0-9]+"] req
            strange-routes
            (friend/wrap-authorize private-user-routes #{::user-model/user})
            (friend/wrap-authorize private-bookmark-routes #{::user-model/user})
            (friend/wrap-authorize private-category-routes #{::user-model/user}))
   bookmarklet-route
+  (GET "/test" [] "loldongssss")
   (friend/logout (ANY "/logout" req (ring.util.response/redirect "/")))
   (route/files "/" {:root "resources"}))
 
@@ -247,18 +264,23 @@
                                                     :server-port :8443))}})
       (handler req))))
 
+(defn unauthorized-handler [& args]
+  {:status 401
+   :body "lollll"})
 
-(def app
-  (-> app-routes
+
+(defonce app
+  (-> #'app-routes
     (friend/authenticate {:credential-fn (partial creds/bcrypt-credential-fn user-model/credentials)
                           :workflows [;(workflows/interactive-form :login-uri "/")
                                       custom-workflows/registration
-                                      custom-workflows/login]
-                          :login-uri "/login"
+                                      custom-workflows/login] :login-uri "/login"
                           :unauthorized-handler
-                          (fn [& args]
-                            {:status 401
-                             :body "Access Denied"})})
+                          unauthorized-handler})
     ;force-login-https
     handler/site))
+
+(comment
+  (def server (ring-server/serve #'app {:port 3000 :join? false
+                                        :auto-reload? false})))
 

@@ -114,14 +114,6 @@
           (order :created_at :DESC)))
 
 
-(defn categories [user-id]
-  (select entities/users-categories
-          (fields :category_id :categories.category)
-          (where {:user_id (Integer. user-id)})
-          (join entities/categories {:category_id :categories.id})
-          (order :created_at)))
-
-
 (defn count [user-id]
   (:count (first 
            (select entities/bookmarks
