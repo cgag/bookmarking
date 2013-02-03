@@ -3,9 +3,6 @@ $('a.delete-bookmark').click(function(e) {
   $.ajax({
     url: $(this).attr('href'),
     type: "POST",
-    success: function(data, txtStatus, xhr) {
-      console.log(data);
-    }
   });
   $(this).parentsUntil('.bookmark-list').remove();
   e.preventDefault();

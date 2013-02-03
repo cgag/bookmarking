@@ -3,7 +3,7 @@
   (:require [bookmarking.models.entities :as entities]
             [bookmarking.views.util :refer [select-field select-one]]
             [korma.core :refer [select where fields join
-                                insert update values]]
+                                insert update values order]]
             [korma.db   :refer [transaction]]
             [validateur.validation :refer [validation-set presence-of
                                            numericality-of length-of
@@ -14,7 +14,7 @@
 (defn name [category-id]
   (select-field :category entities/categories
                 (fields [:category])
-                (where {:id category-id})))
+                (where {:id (Integer. category-id)})))
 
 (defn by-name [cat-name]
   (select-one entities/categories
@@ -22,7 +22,14 @@
 
 (defn by-id [id]
   (select-one entities/categories
-              (where {:id id})))
+              (where {:id (Integer. id)})))
+
+(defn first [user-id]
+  (select-one entities/users-categories
+              (fields [:categories.id])
+              (where {:user_id (Integer. user-id)})
+              (join entities/categories {:category_id :categories.id})
+              (order :categories.id)))
 
 (defn create! [user-id cat-name]
   (let [cat-params {:category cat-name

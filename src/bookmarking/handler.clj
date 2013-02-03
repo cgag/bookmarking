@@ -52,25 +52,28 @@
 (defroutes strange-routes
   (POST "/bookmarks"
         [user-id :as req]
-        ;; TODO: ensure sure i can't be logged in as curtis and post to brian
         (try-user req
-            (if-not user
-              (home/login nil {:ref-req 
-                               (select-keys req [:params 
-                                                 :request-method 
-                                                 :uri])})
-              (authorized-user user-id req
-                               (let [bookmark (bm-model/create! (:params req))]
-                                 (if (:errors bookmark)
-                                   (bookmarks/new user (merge bookmark (:params req)))
-                                   (users/show user))))))))
+                  (if-not user
+                    (home/login nil {:ref-req 
+                                     (select-keys req [:params 
+                                                       :request-method 
+                                                       :uri])})
+                    (authorized-user user-id req
+                                     (let [bookmark (bm-model/create! (:params req))]
+                                       (if (:errors bookmark)
+                                         (bookmarks/new user (merge bookmark (:params req)))
+                                         (users/show user (:category_id bookmark)))))))))
 
 
 (defroutes private-user-routes
   (GET "/" ;; make sure admin can access all of them
        [user-id :as req] 
        (authorized-user user-id req
-         (users/show user (:params req))))
+         (users/show user (:id (cat-model/first user-id)))))
+  (GET "/categories/:cat-id"
+       [user-id cat-id :as req]
+       (authorized-user user-id req
+                        (users/show user cat-id)))
   (GET "/edit"
        [user-id :as req]
        (authorized-user user-id req
@@ -89,34 +92,31 @@
        [user-id :as req]
        (authorized-user user-id req
          (bookmarks/new user req)))
-  ;; TODO: do a redirect instead
   (GET "/bookmarks"
        [user-id :as req]
        (authorized-user user-id req
-         (users/show user (:params req))))
-  (GET  "/bookmarks/:url-id"
-       [user-id url-id :as req]
+                        (ring.util.response/redirect
+                         (str "/users/" user-id
+                              "/categories/" (:id (cat-model/first user-id))))))
+  (GET  "/categories/:cat-id/bookmarks/:url-id/edit"
+       [user-id cat-id url-id :as req]
        (authorized-user user-id req
-         (bookmarks/show user-id url-id)))
-  (GET  "/bookmarks/:url-id/edit"
-       [user-id url-id :as req]
-       (authorized-user user-id req
-         (bookmarks/edit user url-id (:category (:params req)))))
+         (bookmarks/edit user cat-id url-id)))
   ;; posting to bookmarks was here
   (POST "/bookmarks/:url-id"
         [user-id url-id :as req]
         (authorized-user user-id req
-          (bm-model/update! user-id url-id (:params req))))
-  (POST "/bookmarks/:url-id/delete"
-        [user-id url-id :as req]
+                         (bm-model/update! user-id url-id (:params req))
+                         (ring.util.response/redirect (str "/users/" user-id))))
+  (POST "/categories/:cat-id/bookmarks/:url-id/delete"
+        [user-id cat-id url-id :as req]
         (authorized-user user-id req
-          (let [category-id (:category (:params req))
-                bookmark (bm-model/find-bookmark user-id url-id category-id)]
-              (if-not bookmark
-                "No such bookmark."
-                (let [url (:url (url-model/by-id (:url_id bookmark)))]
-                  (bm-model/delete! user-id url-id category-id)
-                  (str "Deleted bookmark for " url)))))))
+          (let [bookmark (bm-model/find-bookmark user-id url-id cat-id)]
+            (if-not bookmark
+              "No such bookmark."
+              (let [url (:url (url-model/by-id (:url_id bookmark)))]
+                (bm-model/delete! user-id url-id cat-id)
+                (str "Deleted bookmark for " url)))))))
 
 
 (defroutes private-category-routes

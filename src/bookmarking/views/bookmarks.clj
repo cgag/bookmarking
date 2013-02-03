@@ -15,9 +15,9 @@
   (main-layout user "new bookmark"
     (new-bookmark-form (:id user) bookmark)))
 
-(defn edit [user url-id cat-id & [errors]]
+(defn edit [user cat-id url-id & [errors]]
   (main-layout user "Edit bookmark"
-               (edit-bookmark-form user url-id cat-id errors)))
+               (edit-bookmark-form user cat-id url-id errors)))
 
 (defn all [id]
   (html [:p (str "User " id "'s bookmarks")]))
@@ -43,7 +43,7 @@
         [:li (label "submit" "")
          (submit-button "Submit")]]))
 
-(defn edit-bookmark-form [user url-id cat-id & [{:keys [errors] :as bm}]]
+(defn edit-bookmark-form [user cat-id url-id & [{:keys [errors] :as bm}]]
   (do
     (println "user: " user)
     (println "form target: " (str "/users" (:id user) "/bookmarks/" url-id))
@@ -71,15 +71,15 @@
      [:div.bookmark-title (link-to {:class "bookmark"} url title)
       [:div.delete (link-to {:class "delete-bookmark"
                              :title "Delete Bookmark"}
-                            (str "/users/" user_id 
-                                 "/bookmarks/" url_id "/delete?category=" category_id)
+                            (str "/users/" user_id "/categories/" category_id
+                                 "/bookmarks/" url_id "/delete")
                             "&#10006;")]]
      [:div.bookmark-host {:title url}
       (if (s/blank? title)
         (link-to url host)
         host)
       [:div.bm-links [:ul
-                      [:li (link-to (str "/users/" user_id "/bookmarks/"
-                                         url_id "/edit?category=" category_id)
+                      [:li (link-to (str "/users/" user_id "/categories/" category_id
+                                         "/bookmarks/" url_id "/edit")
                                     "edit")]
                       [:li (link-to (str "/plain-text?url=" url) "plain text")]]]]]))

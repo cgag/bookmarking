@@ -45,6 +45,13 @@ Pass category names in urls instead of ids.
 -- dont' put /bookmarks in url, just user /categories/:cat-id
 -- Make categories a part of the url:  /users/1/categories/2
 
+Redirect to users/:uid after editing a link
+Don't remove blank titles on edit, should go get the title
+
+Manage/delete categories
+
+Pagination
+
 Force https on login page
 
 Make it prettier

@@ -49,11 +49,7 @@
     (when block-for
       (deref ftr block-for "Too long"))))
 
-;; TODO: stop returning a separate error map, just have an error key in the url map
-;; -- same for bookmarks and users
-;; TODO: don't allow blank urls
-;; TODO: Don't write url to db if the bookmark is going to fail?
-;; TODO: handle url already existing, same for all models?
+
 ;; TODO: create a kibit rule for (if-not (empty? x)) -> (if (seq x))
 (defn create! [params]
   (let [url-params (select-keys params [:url])
@@ -68,8 +64,10 @@
           {:errors errors}
           (let [new-bm (insert entities/bookmarks
                                (values bookmark))]
-            (save-title new-bm (:url url))
+            (when (s/blank? (:title bookmark))
+                (save-title new-bm (:url url)))
             {:bookmark new-bm}))))))
+
 
 ;; TODO: find a cleaner way to do this
 (defn update-params [params]
@@ -81,7 +79,8 @@
                                    (url/create! {:url (:url uparams)}))))
         new-category-id (when (:category uparams)
                           (:category_id (or (cat/by-name (:category uparams))
-                                   (cat/create! (:user-id params) (:category params)))))
+                                            (cat/create! (:user-id params) (:category params)))))
+        uparams (dissoc uparams :category)
         uparams (if-not new-url-id
                   uparams
                   (-> uparams
@@ -94,6 +93,7 @@
                       (assoc :category_id new-category-id)))]
     uparams))
 
+
 (defn update! [user-id url-id params]
   (let [current-cat (:current-cat params)
         current-bm (find-bookmark user-id url-id current-cat)
@@ -105,15 +105,14 @@
             (set-fields (merge current-bm
                                uparams)))))
 
-;; TODO: I shouldn't ahve to specify clojure.core/or here should I?  Or am I just really doing things wrong
-;; TODO: should this be in the user model?
-;; TODO: The bookmarks are unordered, should list by time saved. Which means we need to actually store time created
-(defn bookmarks [user-id & [{:keys [category-id]}]]
+
+(defn bookmarks [user-id category-id]
   (select entities/bookmarks
           (where (merge
                   {:user_id (Integer. user-id)}
-                  (when category-id {:category_id category-id})))
+                  (when category-id {:category_id (Integer. category-id)})))
           (order :created_at :DESC)))
+
 
 (defn categories [user-id]
   (select entities/users-categories
@@ -121,6 +120,7 @@
           (where {:user_id (Integer. user-id)})
           (join entities/categories {:category_id :categories.id})
           (order :created_at)))
+
 
 (defn count [user-id]
   (:count (first 
@@ -130,12 +130,13 @@
                    (join entities/users {:bookmarks.user_id :users.id})
                    (join entities/urls  {:bookmarks.url_id  :urls.id})))))
 
-;; TODO: user a map instead of positional args
+
 (defn find-bookmark [user-id url-id category_id]
   (select-one entities/bookmarks
               (where {:url_id   (Integer. url-id)
                       :user_id  (Integer. user-id)
                       :category_id (Integer. category_id)})))
+
 
 (defn delete! [user-id url-id category-id]
   (delete entities/bookmarks
@@ -145,13 +146,13 @@
 
 ;; validations
 
-;; not sure exactly how to go about this.  Need to convert params to nil if blank?
 (defn unique-bookmark [bm]
   (let [{:keys [user_id url_id category_id]} bm
         from-db (find-bookmark user_id url_id category_id)]
     (if from-db
       [false {:bookmark #{"already exists."}}]
       [true {}])))
+
 
 (def validate-bookmark (validation-set
                         (presence-of :url_id)

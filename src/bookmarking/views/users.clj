@@ -11,19 +11,12 @@
             [bookmarking.views.layouts.main :refer [main-layout]]
             [cemerick.friend :as friend]))
 
-;; TODO: why are the views plural and the models singular?
 
 (declare bookmark-list category-list bookmarklet)
 
-;; TODO: This either needs access to the request (they all would),
-;; or logged-in? needs to be passed in, probably as a part of an options map,
-;; probably the latter, but currently teh former
-;; TODO: make functions like bookmark-list take either the id or the user map itself
-;; TODO: create a function for makingl inks of the form (str "/users/" (:id user))
-(defn show [user & [{:keys [category]}]]
-  (let [category-id (Integer. (or category 1))
-        cat-name (category/name category-id)
-        user-id (:id user)]
+(defn show [user category-id]
+  (let [cat-name (category/name category-id)
+        user-id  (:id user)]
     (main-layout user (str (:username user) "'s stuff") 
       [:div.container-fluid
        [:div.row-fluid
@@ -41,19 +34,16 @@
           [:div.bookmarklet
            [:span.label [:a.bookmarklet {:href (bookmarklet user-id category-id)} cat-name]]]]]]])))
 
-;(bookmarklet-list (:id user))
 
-;; TODO: Return special message when no bookmarks
-
-;; TODO: categories should not be part of bm-model
-;; TODO: should categories be a parm? calling it in cat-list too
 (defn bookmarklet-list [user-id]
   (for [category (bm-model/categories user-id)
         :let [cat-id (:category_id category)
               cat-name (:category category)]]
-    [:div.bookmarklet [:span.label [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]))
+    [:div.bookmarklet
+     [:span.label
+      [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]))
 
-;; TODO: actually handle the post request
+
 (defn edit [user & [errors]]
   (main-layout user "Change your password"
     (error-list errors)
@@ -71,7 +61,7 @@
 
 (defn bookmark-list [user-id & [category-id]]
   [:div.bookmark-list
-   (let [bookmarks (bm-model/bookmarks user-id {:category-id category-id})
+   (let [bookmarks (bm-model/bookmarks user-id category-id)
          bm-list (for [bm bookmarks]
                    (bm-views/display-bookmark bm))]
      (if (seq bm-list)
@@ -79,19 +69,16 @@
        [:p "No bookmarks yet for this category."]))])
 
 
-;; TODO: categories should be links, categories other than default
-;; should be passed as get params in the url
-;; TODO: change category with ajax / pushstate
+;; TODO: change category with ajax / pushstate?
 (defn category-list [user-id & [current-cat]]
   (for [category (bm-model/categories user-id)
         :let [cat-name (:category category)
               cat-id   (:category_id category)]]
     [:li (when (= cat-id current-cat)
            {:class "current-category"}) 
-     (link-to (str "?category=" cat-id) cat-name)]))
+     (link-to (str "/users/" user-id "/categories/" cat-id) cat-name)]))
 
-;; TODO: category links dont' work when you're viwing the profile on "/" due to trying to view the homepage while logged in
-;; TODO: Make sure the function to detect if bookmark already exists says no if the bookmark already exists but is in a different category
+
 (defn bookmarklet [user-id category-id]
   (let [host (e/env :bm-host)
         port (e/env :bm-port)
