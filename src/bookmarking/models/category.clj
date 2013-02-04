@@ -92,6 +92,12 @@
                (where {:user_id (Integer. user-id)
                        :category_id (id cat-name)}))))
 
+(defn has-category-id? [user-id cat-id]
+  (boolean
+   (select-one entities/users-categories
+               (where {:user_id (Integer. user-id)
+                       :category_id (Integer. cat-id)}))))
+
 (defn categories [user-id]
   (select entities/users-categories
           (fields :category_id :categories.category :user_id)

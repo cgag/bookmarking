@@ -48,7 +48,7 @@ Pass category names in urls instead of ids.
 Redirect to users/:uid after editing a link
 Don't remove blank titles on edit, should go get the title
 
-Manage/delete categories
+DONE: Manage/delete categories
 
 Pagination
 
