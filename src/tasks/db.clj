@@ -102,6 +102,7 @@
 
 (def task-map
   {"seed" seed
+   "seed-prod" seed-prod
    "clear" clear
    "rebuild" rebuild})
 
