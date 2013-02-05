@@ -17,16 +17,15 @@
                      "youtube.com" "reddit.com" "news.ycombinator.com"
                      "facebook.com"]]
             (str "http://" url)))
-
 (def categories ["default" "category1" "category2" "category3"])
 
-(defn add-users []
+(defn add-users [usernames]
   (doseq [username usernames]
     (insert entities/users
             (values (merge {:username username
                             :password (creds/hash-bcrypt username)}
                            (with-probability 1/2
-                             {:email (str username "@gmail.com")}))))))
+                             {:email (str username "@example.com")}))))))
 
 (defn add-admin []
   (insert entities/users
@@ -34,12 +33,12 @@
                    :password (creds/hash-bcrypt "admin")
                    :role "admin"})))
 
-(defn add-urls []
+(defn add-urls [urls]
   (doseq [url urls]
     (insert entities/urls
             (values {:url url}))))
 
-(defn add-bookmarks []
+(defn add-bookmarks [usernames urls categories]
   (doseq [user-id (range 1 (inc (count usernames)))
           url-id (take (inc (rand-int (count urls)))
                        (shuffle (range 1 (inc (count urls)))))
@@ -51,27 +50,32 @@
                       :title (:url (url/by-id url-id))
                       :category_id cat-id})))))
 
-(defn add-categories []
+(defn add-categories [categories]
   (doseq [category categories]
     (insert entities/categories
             (values {:category category}))))
 
-(defn add-users-categories []
+(defn add-users-categories [usernames categories]
   (doseq [user-id (range 1 (inc (count usernames)))
           cat-id (range 1 (inc (count categories)))]
     (insert entities/users-categories
             (values {:user_id user-id
                      :category_id cat-id}))))
 
-(defn tons-of-bookmarks []
+(defn tons-of-bookmarks [user-id]
   (dotimes [x 300]
     (let [url-id (:id (insert entities/urls
                               (values {:url (str "http://url" x)})))]
       (insert entities/bookmarks
-              (values {:user_id 1
+              (values {:user_id user-id
                        :url_id url-id
                        :category_id 1
                        :title  (str "http://url" x)})))))
+
+(defn junk-urls [n urls]
+  (for [num (range n)
+        url urls]
+    (str url "/" num)))
 
 (defn seed []
   (add-users)
@@ -82,8 +86,15 @@
   (add-bookmarks)
   (tons-of-bookmarks))
 
-(defn clear []
-  )
+;; TODO use real links in appriate categories
+(defn seed-prod []
+  (add-users ["guest"])
+  (add-categories ["default" "travel" "tech"])
+  (add-users-categories [1] [1 2 3])
+  (add-urls (into (junk-urls 100 urls) urls))
+  (add-bookmarks ["guest"] (into urls (junk-urls 100 urls)) [1 2 3]))
+
+(defn clear [])
 
 (defn rebuild []
   (rollback :all)

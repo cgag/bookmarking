@@ -106,7 +106,7 @@
                                uparams)))))
 
 
-(defn bookmarks [user-id category-id & [{:keys [page per-page]}]]
+(defn bookmarks [user-id category-id {:keys [page per-page]}]
   (let [page (Integer. page)
         per-page (Integer. per-page)]
     (select entities/bookmarks

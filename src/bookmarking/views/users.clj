@@ -26,12 +26,18 @@
             (link-to (str "?page=" (inc page)) "->")
             "->")])))
 
+(defn num-pages [user-id category-id per-page]
+  (let [pages (int (Math/ceil (/ (bm-model/count user-id category-id) per-page)))]
+    (if (= pages 0)
+      1
+      pages)))
+
 (defn show [user category-id & [{:keys [page] :or {page 1}}]]
   (let [[user-id category-id page] [(Integer. (:id user)) (Integer. category-id) (Integer. page)]
         cat-name (cat-model/name category-id)
         user-id  (:id user)
         per-page 50
-        num-pages (int (Math/ceil (/ (bm-model/count user-id category-id) per-page)))
+        num-pages (num-pages user-id category-id per-page)
         page (if (> page num-pages) num-pages page)]
     (main-layout user (str (:username user) "'s stuff") 
       [:div.container-fluid
@@ -45,6 +51,7 @@
           [:h3 "Categories"]
           (category-list user-id category-id)
           (user-link user "/categories/new" "Add Category")
+          [:br]
           (user-link user "/categories" "Manage Categories")]
          [:div#bookmarklets 
           [:h4.bookmarklet "Bookmarklet"]
