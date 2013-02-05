@@ -3,7 +3,7 @@
   (:require [korma.core :refer [select modifier where insert
                                 aggregate values fields join
                                 delete dry-run order update
-                                set-fields]]
+                                set-fields offset limit]]
             [clojure.string :as s]
             [clojure.set :as set]
             [net.cgrand.enlive-html :as enlive]
@@ -106,19 +106,24 @@
                                uparams)))))
 
 
-(defn bookmarks [user-id category-id]
-  (select entities/bookmarks
-          (where (merge
-                  {:user_id (Integer. user-id)}
-                  (when category-id {:category_id (Integer. category-id)})))
-          (order :created_at :DESC)))
+(defn bookmarks [user-id category-id & [{:keys [page per-page]}]]
+  (let [page (Integer. page)
+        per-page (Integer. per-page)]
+    (select entities/bookmarks
+           (where (merge
+                   {:user_id (Integer. user-id)}
+                   (when category-id {:category_id (Integer. category-id)})))
+           (limit per-page)
+           (offset (* (dec page) per-page))
+           (order :created_at :DESC))))
 
 
-(defn count [user-id]
+(defn count [user-id cat-id]
   (:count (first 
            (select entities/bookmarks
                    (aggregate (count :*) :count) 
-                   (where {:users.id (Integer. user-id)})
+                   (where {:users.id (Integer. user-id)
+                           :category_id (Integer. cat-id)})
                    (join entities/users {:bookmarks.user_id :users.id})
                    (join entities/urls  {:bookmarks.url_id  :urls.id})))))
 

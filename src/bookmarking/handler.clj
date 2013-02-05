@@ -61,14 +61,16 @@
             (let [bookmark (bm-model/create! (:params req))]
               (if (:errors bookmark)
                 (bookmarks/new user (merge bookmark (:params req)))
-                (users/show user (:category_id bookmark)))))))))
+                (users/show user (:category_id bookmark) (:params req)))))))))
 
 
 (defroutes private-user-routes
   ;; make sure admin can access all of them
   (GET "/" [user-id :as req] 
     (authorized-user user-id req
-      (users/show user (:id (cat-model/first-category user-id)))))
+      (users/show user
+                  (:id (cat-model/first-category user-id))
+                  (:params req))))
   
   (GET "/edit" [user-id :as req]
     (authorized-user user-id req
@@ -117,7 +119,7 @@
   (GET "/categories/:cat-id" [user-id cat-id :as req]
     (authorized-user user-id req
       (if (cat-model/has-category-id? user-id cat-id)
-        (users/show user cat-id)
+        (users/show user cat-id (:params req))
         "No such category")))
   (GET "/categories/:cat-id/edit" [user-id cat-id :as req]
     (authorized-user user-id req
@@ -268,4 +270,3 @@
 (comment
   (def server (ring-server/serve #'app {:port 3000 :join? false
                                         :auto-reload? false})))
-

@@ -63,13 +63,24 @@
             (values {:user_id user-id
                      :category_id cat-id}))))
 
+(defn tons-of-bookmarks []
+  (dotimes [x 300]
+    (let [url-id (:id (insert entities/urls
+                              (values {:url (str "http://url" x)})))]
+      (insert entities/bookmarks
+              (values {:user_id 1
+                       :url_id url-id
+                       :category_id 1
+                       :title  (str "http://url" x)})))))
+
 (defn seed []
   (add-users)
   (add-admin)
   (add-categories)
   (add-users-categories)
   (add-urls)
-  (add-bookmarks))
+  (add-bookmarks)
+  (tons-of-bookmarks))
 
 (defn clear []
   )

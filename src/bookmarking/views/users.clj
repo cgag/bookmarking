@@ -14,16 +14,32 @@
 
 (declare bookmark-list category-list bookmarklet)
 
-(defn show [user category-id]
-  (let [cat-name (cat-model/name category-id)
+(defn page-links [page num-pages]
+  (let [page (Integer. page)
+        has-prev? (fn [p] (> p 1))
+        has-next? (fn [p] (< p num-pages))]
+    (seq [(if (has-prev? page)
+            (link-to (str "?page=" (dec page)) "<-")
+            "<-")
+          " " page " "
+          (if (has-next? page)
+            (link-to (str "?page=" (inc page)) "->")
+            "->")])))
+
+(defn show [user category-id & [{:keys [page] :or {page 1}}]]
+  (let [[user-id category-id page] [(Integer. (:id user)) (Integer. category-id) (Integer. page)]
+        cat-name (cat-model/name category-id)
         user-id  (:id user)
-        category-id (Integer. category-id)]
+        per-page 50
+        num-pages (int (Math/ceil (/ (bm-model/count user-id category-id) per-page)))
+        page (if (> page num-pages) num-pages page)]
     (main-layout user (str (:username user) "'s stuff") 
       [:div.container-fluid
        [:div.row-fluid
         [:div.span10
-         [:div#add-new-bookmark [:h4 (user-link user "/bookmarks/new" "Add bookmark")]] 
-         [:div#bookmarks  (bookmark-list user-id category-id)]]
+         [:div#add-new-bookmark [:h4 (user-link user "/bookmarks/new" "Add bookmark")]]
+         [:div#pagination (page-links page num-pages)]
+         [:div#bookmarks  (bookmark-list user-id category-id {:page page :per-page per-page})]]
         [:div.span2
          [:div#categories 
           [:h3 "Categories"]
@@ -32,7 +48,7 @@
           (user-link user "/categories" "Manage Categories")]
          [:div#bookmarklets 
           [:h4.bookmarklet "Bookmarklet"]
-          [:span.icon-question-sign]
+          [:span.icon-question-sign {:title "Drag this to your bookmarks bar, then click it while on another site to bookmark that site."}]
           [:div.bookmarklet
            [:span.label [:a.bookmarklet {:href (bookmarklet user-id category-id)} cat-name]]]]]]])))
 
@@ -61,9 +77,9 @@
                 [:li (submit-button {:class "btn btn-large btn-primary"} "Save changes")])]]]))
 
 
-(defn bookmark-list [user-id & [category-id]]
+(defn bookmark-list [user-id category-id & [page-info]]
   [:div.bookmark-list
-   (let [bookmarks (bm-model/bookmarks user-id category-id)
+   (let [bookmarks (bm-model/bookmarks user-id category-id page-info)
          bm-list (for [bm bookmarks]
                    (bm-views/display-bookmark bm))]
      (if (seq bm-list)
@@ -71,7 +87,6 @@
        [:p "No bookmarks yet for this category."]))])
 
 
-;; TODO: change category with ajax / pushstate?
 (defn category-list [user-id current-cat]
   (for [category (cat-model/categories user-id)
         :let [cat-name (:category category)
@@ -96,12 +111,3 @@
          "newScript.type='text/javascript';"
          "newScript.src= scheme +  '//" host ":' + port + '/js/bookmarklet.js?dummy=' + Math.random() + '&url=' + url + '&title=' + title + '&category=' + category + '&userid=' + userid;"
          "document.body.appendChild(newScript);}())")))
-
-
-;; TODO: find out why do is a special form?
-;(defmacro my-do [& exprs]
-;(let [results (doall (for [expr exprs]
-;(eval expr)))]
-;(last results)))
-
-;(my-do (println "test") (+ 3 4))
