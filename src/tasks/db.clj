@@ -92,7 +92,7 @@
   (add-categories ["default" "travel" "tech"])
   (add-users-categories [1] [1 2 3])
   (add-urls (into (junk-urls 100 urls) urls))
-  (add-bookmarks ["guest"] (into urls (junk-urls 100 urls)) [1 2 3]))
+  (add-bookmarks ["guest"] (into urls (junk-urls 300 urls)) [1 2 3]))
 
 (defn clear [])
 
