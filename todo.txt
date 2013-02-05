@@ -51,7 +51,9 @@ Don't remove blank titles on edit, should go get the title
 DONE: Manage/delete categories
 DONE: add tooltip(title) for question mark icon next to bookmarklet
 
-Pagination
+DONE: Pagination
+
+Easy way to export bookmarks
 
 Force https on login page
 

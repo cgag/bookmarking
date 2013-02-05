@@ -70,7 +70,6 @@
   (-> url
       cu/url
       (update-in [:anchor] cu/url-encode)
-      (update-in [:query] cu/url-encode)
       str))
 
 (defn display-bookmark [bookmark]
