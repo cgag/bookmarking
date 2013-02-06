@@ -21,7 +21,8 @@
 ;; (user/bookmarks user-id) or (bookmark/bookmarks user-id)
 ;; How should has-one/has-many relationships be modeled?
 
-(declare validate-bookmark validate-update find-bookmark)
+(declare validate-bookmark validate-update find-bookmark
+         num-bookmarks)
 
 (defn bookmark-params [params]
   (let [bm-params (-> params

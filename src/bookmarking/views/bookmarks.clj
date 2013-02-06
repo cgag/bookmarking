@@ -128,7 +128,7 @@
 
 (defn bookmarks-section [user-id cat-id bookmarks {:keys [page per-page]}]
   (let [per-page (or per-page 50)
-        num-pages (bm/num-pages user-id cat-id per-page)]
+        num-pages (num-pages user-id cat-id per-page)]
     [:div#bookmarks
      [:div#add-new-bookmark [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
      [:div#bookmarks  (bookmark-list bookmarks)]]))
