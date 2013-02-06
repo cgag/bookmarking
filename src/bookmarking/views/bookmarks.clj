@@ -92,3 +92,13 @@
                                          "/bookmarks/" url_id "/edit")
                                     "edit")]
                       [:li (link-to (str "/plain-text?url=" url) "plain text")]]]]]))
+
+(defn search-form [user-id cat-id]
+  (let [search-path (str "/users/" user-id "/categories/" cat-id "/search")]
+    [:div#search-bookmarks-wrapper
+     [:ul#search-bookmarks
+      (form-to [:post search-path]
+               [:li (label "search" "Search bookmarks:")]
+               [:li (text-field {:placehold "E.g. lonely planet"} "query" "")])]]))
+
+

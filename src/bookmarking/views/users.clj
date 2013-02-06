@@ -32,6 +32,7 @@
       1
       pages)))
 
+
 (defn show [user category-id & [{:keys [page] :or {page 1}}]]
   (let [[user-id category-id page] [(Integer. (:id user)) (Integer. category-id) (Integer. page)]
         cat-name (cat-model/name category-id)
@@ -44,6 +45,7 @@
        [:div.row-fluid
         [:div.span10
          [:div#add-new-bookmark [:h4 (user-link user "/bookmarks/new" "Add bookmark")]]
+         (bm-views/search-form user-id category-id)
          [:div#pagination (page-links page num-pages)]
          [:div#bookmarks  (bookmark-list user-id category-id {:page page :per-page per-page})]]
         [:div.span2

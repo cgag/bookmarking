@@ -45,7 +45,9 @@ Pass category names in urls instead of ids.
 -- dont' put /bookmarks in url, just user /categories/:cat-id
 -- Make categories a part of the url:  /users/1/categories/2
 
-Redirect to users/:uid after editing a link
+DONE: Redirect to users/:uid after editing a link
+Prepopulate fields when editing links.
+
 Don't remove blank titles on edit, should go get the title
 
 DONE: Manage/delete categories
@@ -59,13 +61,11 @@ Force https on login page
 
 Make it prettier
 
+"Saving" text is correct size occassional, usually not.  Think this is related to teh fonts used on the page bookmarked maybe (google fonts?)
+
 Add searching for bookmarks
 
 refactor the login workflow
-
-Don't deploy with the test-db
-- Find a wya to manage multiple dbs
-- Or at least remove the admin account
 
 PARTIAL: Add some sort of indication that the page is being saved / is saved a la instapaper
   -- Make it better.  Why can't I increase the font size?
@@ -74,3 +74,5 @@ Should urls like /users/1 redirect to /users/1/? Actually, trailing slash doesn'
 See if we can eliminate the use of select-keys.. just pass full maps?
 
 Write tests?
+
+Need  a way to auto start after rebooting server

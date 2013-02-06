@@ -49,6 +49,8 @@
 ;; TODO: if you attempt to post data when not logged in, you'll be prompted to log in, and then redirected,
 ;; but the actual post doesn't seem to happen? (bookmark won't be created)
 ;; -- actually, the redirect goes to the standard login redirect, so maybe the unauthorized-uri doesn't get set?
+;; TODO: stop wrapping return map in {:bookmark <>} or {:errors}, just
+;; add key to result of create
 (defroutes strange-routes
   (POST "/bookmarks" [user-id :as req]
     (try-user req
@@ -61,7 +63,9 @@
             (let [bookmark (bm-model/create! (:params req))]
               (if (:errors bookmark)
                 (bookmarks/new user (merge bookmark (:params req)))
-                (users/show user (:category_id bookmark) (:params req)))))))))
+                (ring.util.response/redirect
+                 (str "/users/" user-id "/categories/"
+                      (:category_id (:bookmark bookmark)))))))))))
 
 
 (defroutes private-user-routes
@@ -136,7 +140,11 @@
       (let [updated-cat (cat-model/update! user-id cat-id (:params req))
             errors (:errors updated-cat)]
         (if errors
-          (categories/edit-category user cat-id errors) (ring.util.response/redirect (str "/users/" user-id "/categories"))))))
+          (categories/edit-category user cat-id errors)
+          (ring.util.response/redirect (str "/users/" user-id "/categories"))))))
+  (POST "/categories/:cat-id/search" [user-id cat-id :as req]
+    (authorized-user user-id req
+      (str (bm-model/search user-id cat-id (:query (:params req))))))
   (POST "/categories/:cat-id/delete" [user-id cat-id :as req]
     (authorized-user user-id req
       (cat-model/delete! user-id cat-id))))

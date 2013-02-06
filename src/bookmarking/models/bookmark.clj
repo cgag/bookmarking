@@ -3,7 +3,7 @@
   (:require [korma.core :refer [select modifier where insert
                                 aggregate values fields join
                                 delete dry-run order update
-                                set-fields offset limit]]
+                                set-fields offset limit exec-raw]]
             [clojure.string :as s]
             [clojure.set :as set]
             [net.cgrand.enlive-html :as enlive]
@@ -140,6 +140,48 @@
           (where {:user_id (Integer. user-id)
                   :url_id  (Integer. url-id)
                   :category_id (Integer. category-id)})))
+
+(declare like make-query words)
+
+(defn search [user-id cat-id query & [{:keys [limit] :or {limit 1000}}]]
+  (let [tsquery (make-query "&" query) 
+        user-id (Integer. user-id)
+        cat-id  (Integer. cat-id)]
+    (exec-raw [(str
+                "SELECT * FROM
+               bookmarks b,
+               urls u
+               WHERE
+                    b.user_id = ?   AND
+                    b.category_id = ? AND
+                    b.url_id = u.id AND
+                    ( to_tsvector(b.title) @@ to_tsquery(?)
+                      OR "
+                        (like "u.url" query)
+                    ")
+               LIMIT ?")
+               [user-id cat-id tsquery limit]] :results)))
+
+(defn words [s] (s/split s #"\s+"))
+
+(defn make-query 
+  "hello world => hello:* <& or |> world:*"
+  [op query]
+  (s/join (str " " op " ")
+          (for [word (words query)]
+            (str word ":*"))))
+
+(defn like
+  "x LIKE '%query_word_1%'
+   OR ...
+   OR x LIKE '%query_word_n%'"
+  [x query]
+  (->> (for [word (words query)]
+         (str x " LIKE '%" word "%'"))
+       (interpose " OR ")
+       (apply str)))
+
+
 
 ;; validations
 

@@ -1,10 +1,11 @@
 (ns bookmarking.models.category
   (:refer-clojure :exclude [name])
-  (:require [bookmarking.models.entities :as entities]
+  (:require [clojure.string :as s]
+            [bookmarking.models.entities :as entities]
             [bookmarking.views.util :refer [select-field select-one]]
             [korma.core :refer [select where fields join delete
                                 insert update values order sql-only
-                                set-fields dry-run]]
+                                set-fields dry-run sqlfn raw exec-raw]]
             [korma.db   :refer [transaction]]
             [validateur.validation :refer [validation-set presence-of
                                            numericality-of length-of
