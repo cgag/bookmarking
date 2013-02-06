@@ -12,55 +12,43 @@
             [cemerick.friend :as friend]))
 
 
-(declare bookmark-list category-list bookmarklet)
-
-(defn page-links [page num-pages]
-  (let [page (Integer. page)
-        has-prev? (fn [p] (> p 1))
-        has-next? (fn [p] (< p num-pages))]
-    (seq [(if (has-prev? page)
-            (link-to (str "?page=" (dec page)) "<-")
-            "<-")
-          " " page " "
-          (if (has-next? page)
-            (link-to (str "?page=" (inc page)) "->")
-            "->")])))
-
-(defn num-pages [user-id category-id per-page]
-  (let [pages (int (Math/ceil (/ (bm-model/count user-id category-id) per-page)))]
-    (if (= pages 0)
-      1
-      pages)))
-
+(declare category-list bookmarklet display-categories)
 
 (defn show [user category-id & [{:keys [page] :or {page 1}}]]
   (let [[user-id category-id page] [(Integer. (:id user)) (Integer. category-id) (Integer. page)]
         cat-name (cat-model/name category-id)
         user-id  (:id user)
         per-page 50
-        num-pages (num-pages user-id category-id per-page)
-        page (if (> page num-pages) num-pages page)]
+        bookmarks (bm-model/bookmarks user-id category-id {:page page :per-page per-page})]
     (main-layout user (str (:username user) "'s stuff") 
-      [:div.container-fluid
-       [:div.row-fluid
-        [:div.span10
-         [:div#add-new-bookmark [:h4 (user-link user "/bookmarks/new" "Add bookmark")]]
-         (bm-views/search-form user-id category-id)
-         [:div#pagination (page-links page num-pages)]
-         [:div#bookmarks  (bookmark-list user-id category-id {:page page :per-page per-page})]]
-        [:div.span2
-         [:div#categories 
-          [:h3 "Categories"]
-          (category-list user-id category-id)
-          (user-link user "/categories/new" "Add Category")
-          [:br]
-          (user-link user "/categories" "Manage Categories")]
-         [:div#bookmarklets 
-          [:h4.bookmarklet "Bookmarklet"]
-          [:span.icon-question-sign {:title "Drag this to your bookmarks bar, then click it while on another site to bookmark that site."}]
-          [:div.bookmarklet
-           [:span.label [:a.bookmarklet {:href (bookmarklet user-id category-id)} cat-name]]]]]]])))
+      [:div.span10
+       (bm-views/search-form user-id category-id)
+       (bm-views/display-bookmarks user-id category-id bookmarks {:page page :per-page per-page})]
+      [:div.span2
+       (display-categories user-id category-id)
+       [:div#bookmarklets 
+        [:h4.bookmarklet "Bookmarklet"]
+        [:span.icon-question-sign {:title "Drag this to your bookmarks bar, then click it while on another site to bookmark that site."}]
+        [:div.bookmarklet
+         [:span.label [:a.bookmarklet {:href (bookmarklet user-id category-id)} cat-name]]]]])))
 
+(defn display-categories [user-id cat-id]
+  (println "user-id_: " user-id)
+  (println "cat-id_: " cat-id)
+  [:div#categories 
+   [:h3 "Categories"]
+   (category-list user-id cat-id)
+   (user-link user-id "/categories/new" "Add Category")
+   [:br]
+   (user-link user-id "/categories" "Manage Categories")])
+
+(defn search-results [user cat-id query]
+  (let [user-id (:id user)
+        results (bm-model/search user-id cat-id query)]
+    (main-layout user (str "Search results for: " query)
+      (bm-views/search-form user-id cat-id query)
+      (bm-views/bookmark-list results)
+      (display-categories user-id cat-id))))
 
 (defn bookmarklet-list [user-id]
   (for [category (cat-model/categories user-id)
@@ -86,14 +74,7 @@
                 [:li (submit-button {:class "btn btn-large btn-primary"} "Save changes")])]]]))
 
 
-(defn bookmark-list [user-id category-id & [page-info]]
-  [:div.bookmark-list
-   (let [bookmarks (bm-model/bookmarks user-id category-id page-info)
-         bm-list (for [bm bookmarks]
-                   (bm-views/display-bookmark bm))]
-     (if (seq bm-list)
-       bm-list
-       [:p "No bookmarks yet for this category."]))])
+
 
 
 (defn category-list [user-id current-cat]

@@ -38,7 +38,8 @@
         [:li (str (key->field-name k) " " error)])]]))
 
 (defn user-link [user path text]
-  (link-to (str "/users/" (:id user) path) text))
+  (let [user (or (:id user) user)]
+    (link-to (str "/users/" user path) text)))
 
 (defn de-entify [text]
   (-> text

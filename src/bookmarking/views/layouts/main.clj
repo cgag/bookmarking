@@ -156,7 +156,9 @@
     [:body
      chrome-frame
      (nav user)
-     content
+     [:div.container-fluid
+      [:div.row-fluid
+       content]]
      footer
      (include-js "//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js")
      (include-js "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js")

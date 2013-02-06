@@ -143,7 +143,7 @@
 
 (declare like make-query words)
 
-(defn search [user-id cat-id query & [{:keys [limit] :or {limit 1000}}]]
+(defn search [user-id cat-id query & [{:keys [limit page per-page] :or {limit 1000}}]]
   (let [tsquery (make-query "&" query) 
         user-id (Integer. user-id)
         cat-id  (Integer. cat-id)]
@@ -181,7 +181,11 @@
        (interpose " OR ")
        (apply str)))
 
-
+(defn num-pages [user-id category-id per-page]
+  (let [pages (int (Math/ceil (/ (count user-id category-id) per-page)))]
+    (if (= pages 0)
+      1
+      pages)))
 
 ;; validations
 

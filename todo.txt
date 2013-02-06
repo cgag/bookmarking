@@ -64,6 +64,9 @@ Make it prettier
 "Saving" text is correct size occassional, usually not.  Think this is related to teh fonts used on the page bookmarked maybe (google fonts?)
 
 Add searching for bookmarks
+-- Why isn't current-cat highlighted on results page?
+-- Need more refactoring: pagination and such shouldn't be within "display bookmarks?"A
+-- search-results needs to take in a page number somehow (get param)
 
 refactor the login workflow
 

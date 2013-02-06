@@ -1,7 +1,8 @@
 (ns bookmarking.views.bookmarks
   (:require [bookmarking.views.layouts.main :refer [main-layout]]
-            [bookmarking.views.util :refer [error-list]]
+            [bookmarking.views.util :refer [error-list user-link]]
             [bookmarking.models.url :as url]
+            [bookmarking.models.bookmark :as bm]
             [clojure.string :as s]
             [cemerick.url :as cu]
             [hiccup.core :refer :all]
@@ -93,12 +94,44 @@
                                     "edit")]
                       [:li (link-to (str "/plain-text?url=" url) "plain text")]]]]]))
 
-(defn search-form [user-id cat-id]
+(defn search-form [user-id cat-id & [query]]
   (let [search-path (str "/users/" user-id "/categories/" cat-id "/search")]
     [:div#search-bookmarks-wrapper
      [:ul#search-bookmarks
       (form-to [:post search-path]
-               [:li (label "search" "Search bookmarks:")]
-               [:li (text-field {:placehold "E.g. lonely planet"} "query" "")])]]))
+               [:li (text-field {:placehold "E.g. lonely planet"} "query" query)]
+               [:li (submit-button "Search")])]]))
 
 
+(defn page-links [page num-pages]
+  (let [page (Integer. page)
+        num-pages (Integer. num-pages)
+        page (if (> page num-pages) num-pages page)
+        has-prev? (fn [p] (> p 1))
+        has-next? (fn [p] (< p num-pages))]
+    (seq [(if (has-prev? page)
+            (link-to (str "?page=" (dec page)) "<-")
+            "<-")
+          " " page " "
+          (if (has-next? page)
+            (link-to (str "?page=" (inc page)) "->")
+            "->")])))
+
+(declare bookmark-list bookmark-section)
+
+(defn display-bookmarks [user-id cat-id bookmarks {:keys [page per-page]}]
+  (let [num-pages (bm/num-pages user-id cat-id per-page)
+        per-page 50]
+    [:div#bookmarks
+     [:div#add-new-bookmark [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
+     [:div#pagination (page-links page num-pages)]
+     [:div#bookmarks  (bookmark-list bookmarks)]]))
+
+
+(defn bookmark-list [bookmarks]
+  [:div.bookmark-list
+   (let [bm-list (for [bm bookmarks]
+                   (display-bookmark bm))]
+     (if (seq bm-list)
+       bm-list
+       [:p "No bookmarks yet for this category."]))])

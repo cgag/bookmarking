@@ -144,7 +144,7 @@
           (ring.util.response/redirect (str "/users/" user-id "/categories"))))))
   (POST "/categories/:cat-id/search" [user-id cat-id :as req]
     (authorized-user user-id req
-      (str (bm-model/search user-id cat-id (:query (:params req))))))
+      (users/search-results user cat-id (:query (:params req)))))
   (POST "/categories/:cat-id/delete" [user-id cat-id :as req]
     (authorized-user user-id req
       (cat-model/delete! user-id cat-id))))
