@@ -98,33 +98,39 @@
   (let [search-path (str "/users/" user-id "/categories/" cat-id "/search")]
     [:div#search-bookmarks-wrapper
      [:ul#search-bookmarks
-      (form-to [:post search-path]
+      (form-to [:get search-path]
                [:li (text-field {:placehold "E.g. lonely planet"} "query" query)]
                [:li (submit-button "Search")])]]))
 
+(defn num-pages [total per-page]
+  (let [pages (int (Math/ceil (/ total per-page)))]
+    (if (= pages 0)
+      1
+      pages)))
 
-(defn page-links [page num-pages]
+(defn page-links [base-url page num-pages]
   (let [page (Integer. page)
         num-pages (Integer. num-pages)
         page (if (> page num-pages) num-pages page)
-        has-prev? (fn [p] (> p 1))
-        has-next? (fn [p] (< p num-pages))]
-    (seq [(if (has-prev? page)
-            (link-to (str "?page=" (dec page)) "<-")
+        has-prev? (> page 1)
+        has-next? (< page num-pages)]
+    (seq [(if has-next?
+            (link-to (str base-url (dec page)) "<-")
             "<-")
           " " page " "
-          (if (has-next? page)
-            (link-to (str "?page=" (inc page)) "->")
+          (if has-prev?
+            (link-to (str base-url (inc page)) "->")
             "->")])))
+
+(def bookmark-pagination-links  (partial page-links "?page="))
 
 (declare bookmark-list bookmark-section)
 
-(defn display-bookmarks [user-id cat-id bookmarks {:keys [page per-page]}]
-  (let [num-pages (bm/num-pages user-id cat-id per-page)
-        per-page 50]
+(defn bookmarks-section [user-id cat-id bookmarks {:keys [page per-page]}]
+  (let [per-page (or per-page 50)
+        num-pages (bm/num-pages user-id cat-id per-page)]
     [:div#bookmarks
      [:div#add-new-bookmark [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
-     [:div#pagination (page-links page num-pages)]
      [:div#bookmarks  (bookmark-list bookmarks)]]))
 
 

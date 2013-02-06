@@ -1,5 +1,4 @@
 (ns bookmarking.models.bookmark
-  (:refer-clojure :exclude [count])
   (:require [korma.core :refer [select modifier where insert
                                 aggregate values fields join
                                 delete dry-run order update
@@ -77,7 +76,7 @@
         new-url-id      (when (:url uparams)
                           (:id (or (url/by-url (:url uparams))
                                    (url/create! {:url (:url uparams)}))))
-        new-category-id (when (:category uparams)
+        new-cat-id (when (:category uparams)
                           (:category_id (or (cat/by-name (:category uparams))
                                             (cat/create! (:user-id params) (:category params)))))
         uparams (dissoc uparams :category)
@@ -86,11 +85,11 @@
                   (-> uparams
                       (dissoc :url)
                       (assoc :url_id new-url-id)))
-        uparams (if-not new-category-id
+        uparams (if-not new-cat-id
                   uparams
                   (-> uparams
                       (dissoc :category)
-                      (assoc :category_id new-category-id)))]
+                      (assoc :category_id new-cat-id)))]
     uparams))
 
 
@@ -106,19 +105,20 @@
                                uparams)))))
 
 
-(defn bookmarks [user-id category-id {:keys [page per-page]}]
+(defn bookmarks [user-id cat-id {:keys [page per-page]}]
   (let [page (Integer. page)
         per-page (Integer. per-page)]
-    (select entities/bookmarks
-           (where (merge
-                   {:user_id (Integer. user-id)}
-                   (when category-id {:category_id (Integer. category-id)})))
-           (limit per-page)
-           (offset (* (dec page) per-page))
-           (order :created_at :DESC))))
+    [(select entities/bookmarks
+             (where (merge
+                     {:user_id (Integer. user-id)}
+                     (when cat-id {:category_id (Integer. cat-id)})))
+             (limit per-page)
+             (offset (* (dec page) per-page))
+             (order :created_at :DESC))
+     (num-bookmarks user-id cat-id)]))
 
 
-(defn count [user-id cat-id]
+(defn num-bookmarks [user-id cat-id]
   (:count (first 
            (select entities/bookmarks
                    (aggregate (count :*) :count) 
@@ -135,32 +135,37 @@
                       :category_id (Integer. category_id)})))
 
 
-(defn delete! [user-id url-id category-id]
+(defn delete! [user-id url-id cat-id]
   (delete entities/bookmarks
           (where {:user_id (Integer. user-id)
                   :url_id  (Integer. url-id)
-                  :category_id (Integer. category-id)})))
+                  :category_id (Integer. cat-id)})))
 
 (declare like make-query words)
-
-(defn search [user-id cat-id query & [{:keys [limit page per-page] :or {limit 1000}}]]
+(defn search [user-id cat-id query & [{:keys [page per-page] :or {page 1 per-page 50}}]]
   (let [tsquery (make-query "&" query) 
         user-id (Integer. user-id)
-        cat-id  (Integer. cat-id)]
-    (exec-raw [(str
-                "SELECT * FROM
-               bookmarks b,
-               urls u
-               WHERE
-                    b.user_id = ?   AND
-                    b.category_id = ? AND
-                    b.url_id = u.id AND
-                    ( to_tsvector(b.title) @@ to_tsquery(?)
-                      OR "
+        cat-id  (Integer. cat-id)
+        page    (Integer. page)
+        per-page (Integer. per-page)
+        offset  (* (dec page) per-page)
+        limit   per-page
+        base-query (str
+                    "FROM
+                        bookmarks b,
+                        urls u
+                    WHERE
+                        b.user_id = ?   AND
+                        b.category_id = ? AND
+                        b.url_id = u.id AND
+                        ( to_tsvector(b.title) @@ to_tsquery(?)
+                        OR "
                         (like "u.url" query)
-                    ")
-               LIMIT ?")
-               [user-id cat-id tsquery limit]] :results)))
+                        ")")
+        real-query (str "SELECT * " base-query "OFFSET ? LIMIT ?")
+        count-query (str "SELECT COUNT(*) " base-query)]
+    [(exec-raw [real-query [user-id cat-id tsquery offset limit]] :results)
+     (:count (first (exec-raw [count-query [user-id cat-id tsquery]] :results)))]))
 
 (defn words [s] (s/split s #"\s+"))
 
@@ -181,11 +186,6 @@
        (interpose " OR ")
        (apply str)))
 
-(defn num-pages [user-id category-id per-page]
-  (let [pages (int (Math/ceil (/ (count user-id category-id) per-page)))]
-    (if (= pages 0)
-      1
-      pages)))
 
 ;; validations
 

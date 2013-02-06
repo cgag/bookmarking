@@ -128,6 +128,9 @@
   (GET "/categories/:cat-id/edit" [user-id cat-id :as req]
     (authorized-user user-id req
       (categories/edit-category user cat-id)))
+  (GET "/categories/:cat-id/search" [user-id cat-id :as req]
+    (authorized-user user-id req
+      (users/search-results user cat-id (:params req))))
   (POST "/categories" [user-id :as req]
     (authorized-user user-id req
       (let [cat-name (:category (:params req))
@@ -142,9 +145,6 @@
         (if errors
           (categories/edit-category user cat-id errors)
           (ring.util.response/redirect (str "/users/" user-id "/categories"))))))
-  (POST "/categories/:cat-id/search" [user-id cat-id :as req]
-    (authorized-user user-id req
-      (users/search-results user cat-id (:query (:params req)))))
   (POST "/categories/:cat-id/delete" [user-id cat-id :as req]
     (authorized-user user-id req
       (cat-model/delete! user-id cat-id))))
