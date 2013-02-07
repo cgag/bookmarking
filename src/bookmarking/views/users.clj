@@ -41,12 +41,10 @@
      [:div.bookmarklet
       [:span.label [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]]))
 
-(defn categories-section [user-id cat-id]
-  (println "user-id_: " user-id)
-  (println "cat-id_: " cat-id)
+(defn categories-section [user-id cat-id & [url-fn]]
   [:div#categories 
    [:h3 "Categories"]
-   (category-list user-id cat-id)
+   (category-list user-id cat-id url-fn)
    (user-link user-id "/categories/new" "Add Category")
    [:br]
    (user-link user-id "/categories" "Manage Categories")])
@@ -64,7 +62,9 @@
         (bm-views/page-links (str query-str "&page=") page (bm-views/num-pages num-results per-page))]
        (bm-views/bookmarks-section user-id cat-id results {:page page})]
       [:div.span2
-       (categories-section user-id cat-id)
+       (categories-section user-id cat-id (fn [uid cid]
+                                            (str "/users/" uid "/categories/"
+                                                 cid "/search" query-str)))
        (bookmarklet-section user-id cat-id)])))
 
 (defn bookmarklet-list [user-id]
@@ -92,15 +92,16 @@
 
 
 
-
-
-(defn category-list [user-id current-cat]
-  (for [category (cat-model/categories user-id)
-        :let [cat-name (:category category)
-              cat-id   (:category_id category)]]
-    [:li (when (= cat-id current-cat)
-           {:class "current-category"}) 
-     (link-to (str "/users/" user-id "/categories/" cat-id) cat-name)]))
+(defn category-list [user-id current-cat & [url-fn]]
+  (let [current-cat (Integer. current-cat)
+        url-fn (or url-fn
+                   (fn [uid cid] (str "/users/" uid "/categories/" cid)))]
+      (for [category (cat-model/categories user-id)
+         :let [cat-name (:category category)
+               cat-id   (Integer. (:category_id category))]]
+     [:li (when (= cat-id current-cat)
+            {:class "current-category"}) 
+      (link-to (url-fn user-id cat-id) cat-name)])))
 
 
 (defn bookmarklet [user-id category-id]
