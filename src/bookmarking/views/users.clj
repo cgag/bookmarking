@@ -96,12 +96,12 @@
   (let [current-cat (Integer. current-cat)
         url-fn (or url-fn
                    (fn [uid cid] (str "/users/" uid "/categories/" cid)))]
-      (for [category (cat-model/categories user-id)
-         :let [cat-name (:category category)
-               cat-id   (Integer. (:category_id category))]]
-     [:li (when (= cat-id current-cat)
-            {:class "current-category"}) 
-      (link-to (url-fn user-id cat-id) cat-name)])))
+    (for [category (cat-model/categories user-id)
+          :let [cat-name (:category category)
+                cat-id   (Integer. (:category_id category))]]
+      [:li (when (= cat-id current-cat)
+             {:class "current-category"}) 
+       (link-to (url-fn user-id cat-id) cat-name)])))
 
 
 (defn bookmarklet [user-id category-id]
