@@ -14,28 +14,32 @@
 
 
 (declare category-list bookmarklet display-categories
-         bookmarks-section categories-section)
+         bookmarks-section categories-section bookmarklet-section)
 
-(defn show [user category-id & [{:keys [page] :or {page 1}}]]
-  (let [[user-id category-id page] [(Integer. (:id user)) (Integer. category-id) (Integer. page)]
-        cat-name (cat-model/name category-id)
+(defn show [user cat-id & [{:keys [page] :or {page 1}}]]
+  (let [[user-id cat-id page] [(Integer. (:id user)) (Integer. cat-id) (Integer. page)]
+        cat-name (cat-model/name cat-id)
         user-id  (:id user)
         per-page 50
-        [bookmarks total-bms] (bm-model/bookmarks user-id category-id {:page page :per-page per-page})
+        [bookmarks total-bms] (bm-model/bookmarks user-id cat-id {:page page :per-page per-page})
         num-pages (bm-views/num-pages total-bms per-page)]
     (main-layout user (str (:username user) "'s stuff") 
       [:div.span10
-       (bm-views/search-form user-id category-id)
+       (bm-views/search-form user-id cat-id)
        [:div.pagination
         (bm-views/bookmark-pagination-links page num-pages)]
-       (bm-views/bookmarks-section user-id category-id bookmarks {:page page :per-page per-page})]
+       (bm-views/bookmarks-section user-id cat-id bookmarks {:page page :per-page per-page})]
       [:div.span2
-       (categories-section user-id category-id)
-       [:div#bookmarklets 
-        [:h4.bookmarklet "Bookmarklet"]
-        [:span.icon-question-sign {:title "Drag this to your bookmarks bar, then click it while on another site to bookmark that site."}]
-        [:div.bookmarklet
-         [:span.label [:a.bookmarklet {:href (bookmarklet user-id category-id)} cat-name]]]]])))
+       (categories-section user-id cat-id)
+       (bookmarklet-section user-id cat-id)])))
+
+(defn bookmarklet-section [user-id cat-id]
+  (let [cat-name (cat-model/name cat-id)]
+    [:div#bookmarklets 
+     [:h4.bookmarklet "Bookmarklet"]
+     [:span.icon-question-sign {:title "Drag this to your bookmarks bar, then click it while on another site to bookmark that site."}]
+     [:div.bookmarklet
+      [:span.label [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]]))
 
 (defn categories-section [user-id cat-id]
   (println "user-id_: " user-id)
@@ -54,10 +58,14 @@
         query-str (str "?query=" (URLEncoder/encode query))
         [results num-results] (bm-model/search user-id cat-id query {:page page})]
     (main-layout user (str "Search results for: " query)
-      (bm-views/search-form user-id cat-id query)
-      [:div.pagination
-       (bm-views/page-links (str query-str "&page=") page (bm-views/num-pages num-results per-page))]
-      (bm-views/bookmarks-section user-id cat-id results {:page page}))))
+      [:div.span10
+       (bm-views/search-form user-id cat-id query)
+       [:div.pagination
+        (bm-views/page-links (str query-str "&page=") page (bm-views/num-pages num-results per-page))]
+       (bm-views/bookmarks-section user-id cat-id results {:page page})]
+      [:div.span2
+       (categories-section user-id cat-id)
+       (bookmarklet-section user-id cat-id)])))
 
 (defn bookmarklet-list [user-id]
   (for [category (cat-model/categories user-id)
