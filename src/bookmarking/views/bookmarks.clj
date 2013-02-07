@@ -114,11 +114,11 @@
         page (if (> page num-pages) num-pages page)
         has-prev? (> page 1)
         has-next? (< page num-pages)]
-    (seq [(if has-next?
+    (seq [(if has-prev?
             (link-to (str base-url (dec page)) "<-")
             "<-")
           " " page " "
-          (if has-prev?
+          (if has-next?
             (link-to (str base-url (inc page)) "->")
             "->")])))
 

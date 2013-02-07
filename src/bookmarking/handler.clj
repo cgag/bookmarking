@@ -157,7 +157,7 @@
   'left: 0; top: 0; text-align: center; line-height: 100%;')
   d.style.background='black';
   d.style.color='white';
-  d.style.fontFamily = 'Verdana';
+  d.style.fontFamily = 'Oswald, sans-serif';
   d.style.fontSize=60;
   d.innerHTML='<br/><br/><br/><br/><br/><br/><br/>Saving...'
   document.body.appendChild(d);

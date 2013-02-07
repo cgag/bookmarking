@@ -152,6 +152,7 @@
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1.0"}]
      (include-css "/css/mycss.css")
+     #_(include-css "http://fonts.googleapis.com/css?family=Roboto+Condensed|Oswald&subset=latin,cyrillic-ext,greek,greek-ext,vietnamese,latin-ext,cyrillic") 
      (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css")]
     [:body
      chrome-frame
