@@ -1,0 +1,186 @@
+@import "theme.less";
+@import "variables.less";
+@import "bootstrap/less/responsive.less";
+
+@s-base03:    #002b36;
+@s-base02:    #073642;
+@s-base01:    #586e75;
+@s-base00:    #657b83;
+@s-base0:     #839496;
+@s-base1:     #93a1a1;
+@s-base2:     #eee8d5;
+@s-base3:     #fdf6e3;
+@s-yellow:    #b58900;
+@s-orange:    #cb4b16;
+@s-red:       #dc322f;
+@s-magenta:   #d33682;
+@s-violet:    #6c71c4;
+@s-blue:      #268bd2;
+@s-cyan:      #2aa198;
+@s-green:     #859900;
+
+// @text:        #656562;
+@text:        #656562;
+
+@current-cat: @s-base1;
+
+a {
+    color: @s-blue;
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.right-col {
+    .box;
+}
+
+.box {
+    background: #fbfbfb;
+    .border-radius(5px);
+    border: 1px solid black;
+
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.categories {
+
+    .current-category {
+        background: @current-cat; 
+        background: #eee;
+    }
+
+    ul {
+        list-style-type: none;
+        padding-bottom: 10px;
+        // padding-left: 20px;
+    }
+
+    li {
+        &:hover {
+            background-color: #eee;
+        }
+    }
+}
+
+.container-fluid {
+    padding-top: 20px;
+}
+
+ul.nav {
+    li {
+        a {
+            &:hover {
+                text-decoration: underline !important;
+            }
+        }
+    }
+}
+
+body {
+    // padding-top: 60px; 
+    color: @text;
+}
+
+.hidden {
+    display: none;
+}
+
+#sign-up-form {
+    list-style-type: none;
+}
+
+#login-form {
+    list-style-type: none;
+}
+
+input.error {
+    background: #fdd;
+}
+
+.error-list {
+    background: red;
+    border: 2px solid #f66;
+    background: #fdd;
+}
+
+
+.bookmarks-wrapper {
+    .box;
+    // background: @s-base1;
+    .bookmark {
+        border-bottom: 1px solid black;
+        &:last-child {
+            border-bottom: none;
+        }
+        .link {}
+        .host {}
+        .delete{
+            float: right;
+            color: @s-red;
+            text-decoration: none;
+            &:hover {
+                color: #BD0000;
+            }
+        }
+    }
+}
+
+.bookmark-url {
+}
+
+a.bookmarklet {
+    color: white;
+    text-decoration: none;
+}
+
+a.bookmarklet:hover {
+    color: white;
+    text-decoration: none;
+}
+
+h4.bookmarklet {
+    display:inline;
+    padding-right: 5px;
+}
+
+.bm-links {
+    float: right;
+}
+
+ul {
+    margin: 0;
+}
+
+.bm-links ul {
+    margin: 0;
+}
+
+.bm-links li {
+    display: inline;
+    padding-left: 10px;
+}
+
+.management {
+    display: inline;
+}
+
+.manage-list {
+    border: 2px solid black;
+}
+
+.category {
+    border-bottom: 2px solid black;
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.name {
+    border: 2x solid blue;
+}
+
+// @import "bootstrap/less/responsive.less";

@@ -1,8 +1,9 @@
 (ns bookmarking.views.layouts.main
   (:require [hiccup  [core :refer :all]
-                     [element :refer [link-to]]
-                     [page :refer [html5 include-css include-js]]
-                     [form :refer :all]]
+                [element :refer [link-to]]
+                [page :refer [html5 include-css include-js]]
+                [form :refer :all]
+                [util :refer [to-uri]]]
             [bookmarking.views.util :refer [empty->nil]]))
 
 (defn not-blank [s]
@@ -82,24 +83,20 @@
 (declare logged-in-menu logged-out-menu)
 
 ;; TODO: how to do this without polluting the html?
-;; TODO: just do a dropdown menu for login / sign-up,
-;; but fall back to dedicated page if no javascript
-(defn nav
-  [& [user]]
-  [:div {:class "navbar navbar-inverse navbar-fixed-top"}
-   [:div {:class "navbar-inner"}
-    [:div {:class "container"}
-     [:a {:class "btn btn-navbar" :data-toggle "collapse" :data-target ".nav-collapse"}
-      [:span {:class "icon-bar"}]
-      [:span {:class "icon-bar"}]
-      [:span {:class "icon-bar"}]]
-     [:a {:class "brand" :href "/"} "Bookmarking"]
-     [:div {:class "nav-collapse collapse"}
-      [:ul {:class "nav" :role "navigation"}]
-      (let [nav-section [:ul {:class "nav pull-right" :role "navigation"}]]
-        (if user
-          (logged-in-menu user) 
-          logged-out-menu))]]]])
+(defn nav [& [user]]
+  [:div.nav-wrapper
+   [:div {:class "navbar navbar-static-top"}
+    [:div.navbar-inner
+     [:div.container
+      [:a.btn.btn-navbar {:data-toggle "collapse" :data-target ".nav-collapse"}
+       [:span.icon-bar]
+       [:span.icon-bar]
+       [:span.icon-bar]]
+      [:a.brand {:href "/"} "Bookmarking"]
+      [:div.nav-collapse.collapse
+       (if user
+         (logged-in-menu user) 
+         logged-out-menu)]]]]])
 
 (defn logged-in-menu [user]
   (let [nav-section [:ul {:class "nav pull-right" :role "navigation"}]]
@@ -134,33 +131,55 @@
           s.parentNode.insertBefore(g,s)}(document,'script'));
           </script>"
           ga-code))
-
 ;; TODO: probably not necessary
 (def chrome-frame
   "<!--[if lt IE 7]>
   <p class=\"chromeframe\">You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> or <a href=\"http://www.google.com/chromeframe/?redirect=true\">activate Google Chrome Frame</a> to improve your experience.</p>
   <![endif]-->")
 
+(defn include-less [path]
+  [:link {:type "text/css" :href (to-uri path) :rel "stylesheet/less"}])
+
+(comment (defn main-layout [user title & content]
+           (html5 
+            {:lang "en"}
+            [:head
+             [:meta {:charset "utf-8"}]
+             [:title title]
+             [:meta {:name "description" 
+                     :content "Simple asocial bookmarking service."}]
+             [:meta {:name "viewport"
+                     :content "width=device-width, initial-scale=1.0"}]
+             (include-css "/css/styles.css")]
+            [:body
+             chrome-frame
+             (nav user)
+             [:div.container-fluid
+              [:div.row-fluid
+               content]]
+             footer
+             (include-js "//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js")
+             (include-js "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js")
+             (include-js "/js/myjs.js")])))
+
 (defn main-layout [user title & content]
   (html5 
-    {:lang "en"}
-    [:head
-     [:meta {:charset "utf-8"}]
-     [:title title]
-     [:meta {:name "description" 
-             :content "Simple asocial bookmarking service."}]
-     [:meta {:name "viewport"
-             :content "width=device-width, initial-scale=1.0"}]
-     (include-css "/css/mycss.css")
-     #_(include-css "http://fonts.googleapis.com/css?family=Roboto+Condensed|Oswald&subset=latin,cyrillic-ext,greek,greek-ext,vietnamese,latin-ext,cyrillic") 
-     (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css")]
-    [:body
-     chrome-frame
-     (nav user)
-     [:div.container-fluid
-      [:div.row-fluid
-       content]]
-     footer
-     (include-js "//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js")
-     (include-js "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js")
-     (include-js "/js/myjs.js")]))
+   {:lang "en"}
+   [:head
+    [:meta {:charset "utf-8"}]
+    [:title title]
+    [:meta {:name "description" 
+            :content "Simple asocial bookmarking service."}]
+    [:meta {:name "viewport"
+            :content "width=device-width, initial-scale=1.0"}]
+    (include-css "/css/styles.css")]
+   [:body
+    chrome-frame
+    (nav user)
+    [:div.container
+     [:div.row
+      content]]
+    footer
+    (include-js "//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js")
+    (include-js "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js")
+    (include-js "/js/myjs.js")]))

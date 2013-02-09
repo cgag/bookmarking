@@ -15,5 +15,5 @@ var make_delete_fn= function(parent_selector) {
 var delete_bookmark = make_delete_fn('.bookmark-list');
 var delete_category = make_delete_fn('.manage-list');
 
-$('a.delete-bookmark').click(delete_bookmark);
+$('.delete').click(delete_bookmark);
 $('a.delete-category').click(delete_category);

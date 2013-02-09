@@ -16,10 +16,10 @@
                (new-category-form (:id user) category)))
 
 (defn new-category-form [user-id & [{:keys [errors]}]]
-  [:div#new-category-wrapper
+  [:div.new-category-wrapper
    (when errors (error-list errors))
    [:fieldset
-    [:ul#new-category-form
+    [:ul.new-category-form
      (form-to [:post (str "/users/" user-id "/categories")]
               [:li (label "category" "Category: ")
                (text-field "category" "")]
@@ -37,7 +37,7 @@
 
 (defn manage-categories [user-id]
   (let [categories (cat/categories user-id)]
-    [:div#categories-wrapper
+    [:div.categories-wrapper
      [:div.manage-list
       (for [category categories
             :let [cat-name (:category category)]]

@@ -24,14 +24,19 @@
         [bookmarks total-bms] (bm-model/bookmarks user-id cat-id {:page page :per-page per-page})
         num-pages (bm-views/num-pages total-bms per-page)]
     (main-layout user (str (:username user) "'s stuff") 
-      [:div.span10
-       (bm-views/search-form user-id cat-id)
-       [:div.pagination
-        (bm-views/bookmark-pagination-links page num-pages)]
-       (bm-views/bookmarks-section user-id cat-id bookmarks {:page page :per-page per-page})]
-      [:div.span2
-       (categories-section user-id cat-id)
-       (bookmarklet-section user-id cat-id)])))
+      [:div.row
+       [:div.span12
+        (bm-views/search-form user-id cat-id)
+        [:div.pagination
+         (bm-views/bookmark-pagination-links page num-pages)]]]
+      [:div.row
+       [:div.span9
+        (bm-views/bookmarks-section user-id cat-id bookmarks {:page page :per-page per-page})]
+       [:div.span3
+        [:div.right-col
+         (categories-section user-id cat-id)
+         [:hr]
+         (bookmarklet-section user-id cat-id)]]])))
 
 (defn bookmarklet-section [user-id cat-id]
   (let [cat-name (cat-model/name cat-id)]
@@ -42,8 +47,8 @@
       [:span.label [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]]))
 
 (defn categories-section [user-id cat-id & [url-fn]]
-  [:div#categories 
-   [:h3 "Categories"]
+  [:div.categories 
+   [:h4 "Categories"]
    (category-list user-id cat-id url-fn)
    (user-link user-id "/categories/new" "Add Category")
    [:br]
@@ -96,12 +101,13 @@
   (let [current-cat (Integer. current-cat)
         url-fn (or url-fn
                    (fn [uid cid] (str "/users/" uid "/categories/" cid)))]
-    (for [category (cat-model/categories user-id)
-          :let [cat-name (:category category)
-                cat-id   (Integer. (:category_id category))]]
-      [:li (when (= cat-id current-cat)
-             {:class "current-category"}) 
-       (link-to (url-fn user-id cat-id) cat-name)])))
+    [:ul
+     (for [category (cat-model/categories user-id)
+           :let [cat-name (:category category)
+                 cat-id   (Integer. (:category_id category))]]
+       [:li (when (= cat-id current-cat)
+              {:class "current-category"}) 
+        (link-to (url-fn user-id cat-id) cat-name)])]))
 
 
 (defn bookmarklet [user-id category-id]

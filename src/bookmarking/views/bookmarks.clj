@@ -76,15 +76,17 @@
 (defn display-bookmark [bookmark]
   (let [{:keys [user_id url_id description title category_id]} bookmark
         url (my-encode (:url (url/by-id url_id)))
+        _ (println "url_id: " url_id)
+        _ (println "Url: " url)
         host (host url)]
-    [:div.bookmark-wrapper
-     [:div.bookmark-title (link-to {:class "bookmark"} url title)
-      [:div.delete (link-to {:class "delete-bookmark"
+    [:div.bookmark
+     [:div.title (link-to {:class "link"} url title)
+      [:div.delete (link-to {:class "delete"
                              :title "Delete Bookmark"}
                             (str "/users/" user_id "/categories/" category_id
                                  "/bookmarks/" url_id "/delete")
                             "&#10006;")]]
-     [:div.bookmark-host {:title url}
+     [:div.host {:title url}
       (if (s/blank? title)
         (link-to url host)
         host)
@@ -129,9 +131,9 @@
 (defn bookmarks-section [user-id cat-id bookmarks {:keys [page per-page]}]
   (let [per-page (or per-page 50)
         num-pages (num-pages (count bookmarks) per-page)]
-    [:div#bookmarks
-     [:div#add-new-bookmark [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
-     [:div#bookmarks  (bookmark-list bookmarks)]]))
+    [:div.bookmarks-wrapper
+     [:div.add-new-bookmark [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
+     [:div.bookmarks  (bookmark-list bookmarks)]]))
 
 
 (defn bookmark-list [bookmarks]
