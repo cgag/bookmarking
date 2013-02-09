@@ -47,7 +47,6 @@ a {
 }
 
 .controls {
-    border: 1px solid black;
     overflow: auto;
     width: 100%;
 }
@@ -57,7 +56,7 @@ ul.search-bookmarks {
     input
     {
         margin: 0;
-        margin-right: 5px;
+        margin-right: 3px;
     }
     li {
         display: inline;
@@ -126,10 +125,15 @@ input.error {
 }
 
 .add-new-bookmark {
-    line-height: 100%;
-    border: 1px solid green;
-    padding: 0;
     float: left;
+    p {
+        padding-top: 8px;
+    }
+    a {
+        font-size: 130%;
+        padding: 0;
+        line-height: 0;
+    }
 }
 
 .search-bookmarks-wrapper {

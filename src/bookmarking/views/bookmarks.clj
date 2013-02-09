@@ -3,6 +3,7 @@
             [bookmarking.views.util :refer [error-list user-link]]
             [bookmarking.models.url :as url]
             [bookmarking.models.bookmark :as bm]
+            [bookmarking.models.category :as cat]
             [clojure.string :as s]
             [cemerick.url :as cu]
             [hiccup.core :refer :all]
@@ -19,7 +20,7 @@
 
 (defn edit [user cat-id url-id & [errors]]
   (main-layout user "Edit bookmark"
-               (edit-bookmark-form user cat-id url-id errors)))
+    (edit-bookmark-form user cat-id url-id errors)))
 
 (defn all [id]
   (html [:p (str "User " id "'s bookmarks")]))
@@ -27,34 +28,33 @@
 (defn show [user-id url-id]
   (str "user-id: " user-id " url-id " url-id))
 
-
 (defn host [url]
   (let [host (:host (cu/url url))]
     (if (.startsWith host "www.")
       (subs host 4)
       host)))
 
-(defn bookmark-fields [{:keys [title url category]}]
-  ;; hiccup wants seqs of elements, vector doesn't work
-  (seq [[:li (label "url" "Url")
-         (text-field "url" url)]
-        [:li (label "category" "Category")
-         (text-field "category" category)]
-        [:li (label "title" "Title (optional, will default to the page's actual title)")
-         (text-field "title" title)]
-        [:li (label "submit" "")
-         (submit-button "Submit")]]))
+(defn bookmark-fields [{:keys [title url_id category_id]}]
+  (let [url      (:url (url/by-id url_id))
+        category (:category (cat/by-id category_id))]
+    (seq [[:li (label "url" "Url")
+           (text-field "url" url)]
+          [:li (label "category" "Category")
+           (text-field "category" category)]
+          [:li (label "title" "Title (optional, will default to the page's actual title)")
+           (text-field "title" title)]
+          [:li (label "submit" "")
+           (submit-button "Submit")]])))
 
-(defn edit-bookmark-form [user cat-id url-id & [{:keys [errors] :as bm}]]
-  (do
-    (println "user: " user)
-    (println "form target: " (str "/users" (:id user) "/bookmarks/" url-id))
+(defn edit-bookmark-form [user cat-id url-id & [{:keys [errors]}]]
+  (let [user-id (:id user)
+        current (bm/find-bookmark user-id url-id cat-id)]
     [:div#edit-bookmark-wrapper
      (when errors (error-list errors))
      [:ul#edit-bookmark-form
-      (form-to [:post (str "/users/" (:id user) "/bookmarks/" url-id)]
+      (form-to [:post (str "/users/" user-id "/bookmarks/" url-id)]
                [:li.hidden (hidden-field "current-cat" cat-id)]
-               (bookmark-fields bm))]]))
+               (bookmark-fields current))]]))
 
 (defn new-bookmark-form [user-id & [{:keys [errors] :as bm}]]
   [:div#new-bookmark-wrapper
@@ -134,7 +134,7 @@
     [:div.bookmarks-wrapper
      [:div.controls
       [:div.add-new-bookmark
-       [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
+       [:p (user-link user-id "/bookmarks/new" "Add bookmark")]]
       (search-form user-id cat-id query)]
      [:div.bookmarks  (bookmark-list bookmarks)]]))
 

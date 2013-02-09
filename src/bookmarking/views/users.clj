@@ -37,6 +37,28 @@
          [:hr]
          (bookmarklet-section user-id cat-id)]]])))
 
+
+(defn search-results [user cat-id {:keys [query page per-page]}]
+  (let [user-id (:id user)
+        page (or page 1)
+        per-page (or per-page 50)
+        query-str (str "?query=" (URLEncoder/encode query))
+        [results num-results] (bm-model/search user-id cat-id query {:page page})]
+    (main-layout user (str "Search results for: " query)
+      [:div.row
+       [:div.span12
+        [:div.pagination
+         (bm-views/page-links (str query-str "&page=") page (bm-views/num-pages num-results per-page))]]]
+      [:div.row
+       [:div.span9
+        (bm-views/bookmarks-section user-id cat-id results {:page page :query query})]
+       [:div.span3
+        [:div.right-col
+         (categories-section user-id cat-id (fn [uid cid]
+                                              (str "/users/" uid "/categories/"
+                                                   cid "/search" query-str)))
+         (bookmarklet-section user-id cat-id)]]])))
+
 (defn bookmarklet-section [user-id cat-id]
   (let [cat-name (cat-model/name cat-id)]
     [:div#bookmarklets 
@@ -52,23 +74,6 @@
    (user-link user-id "/categories/new" "Add Category")
    [:br]
    (user-link user-id "/categories" "Manage Categories")])
-
-(defn search-results [user cat-id {:keys [query page per-page]}]
-  (let [user-id (:id user)
-        page (or page 1)
-        per-page (or per-page 50)
-        query-str (str "?query=" (URLEncoder/encode query))
-        [results num-results] (bm-model/search user-id cat-id query {:page page})]
-    (main-layout user (str "Search results for: " query)
-      [:div.span10
-       [:div.pagination
-        (bm-views/page-links (str query-str "&page=") page (bm-views/num-pages num-results per-page))]
-       (bm-views/bookmarks-section user-id cat-id results {:page page :query query})]
-      [:div.span2
-       (categories-section user-id cat-id (fn [uid cid]
-                                            (str "/users/" uid "/categories/"
-                                                 cid "/search" query-str)))
-       (bookmarklet-section user-id cat-id)])))
 
 (defn bookmarklet-list [user-id]
   (for [category (cat-model/categories user-id)

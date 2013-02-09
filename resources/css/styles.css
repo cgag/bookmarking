@@ -7919,7 +7919,6 @@ a:hover {
   padding-bottom: 10px;
 }
 .controls {
-  border: 1px solid black;
   overflow: auto;
   width: 100%;
 }
@@ -7928,7 +7927,7 @@ ul.search-bookmarks {
 }
 ul.search-bookmarks input {
   margin: 0;
-  margin-right: 5px;
+  margin-right: 3px;
 }
 ul.search-bookmarks li {
   display: inline;
@@ -7971,10 +7970,15 @@ input.error {
   background: #fdd;
 }
 .add-new-bookmark {
-  line-height: 100%;
-  border: 1px solid green;
-  padding: 0;
   float: left;
+}
+.add-new-bookmark p {
+  padding-top: 8px;
+}
+.add-new-bookmark a {
+  font-size: 130%;
+  padding: 0;
+  line-height: 0;
 }
 .search-bookmarks-wrapper {
   float: right;
