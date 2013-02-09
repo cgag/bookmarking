@@ -7918,6 +7918,21 @@ a:hover {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+.controls {
+  border: 1px solid black;
+  overflow: auto;
+  width: 100%;
+}
+ul.search-bookmarks {
+  list-style-type: none;
+}
+ul.search-bookmarks input {
+  margin: 0;
+  margin-right: 5px;
+}
+ul.search-bookmarks li {
+  display: inline;
+}
 .categories .current-category {
   background: #93a1a1;
   background: #eee;
@@ -7954,6 +7969,15 @@ input.error {
   background: red;
   border: 2px solid #f66;
   background: #fdd;
+}
+.add-new-bookmark {
+  line-height: 100%;
+  border: 1px solid green;
+  padding: 0;
+  float: left;
+}
+.search-bookmarks-wrapper {
+  float: right;
 }
 .bookmarks-wrapper {
   background: #fbfbfb;

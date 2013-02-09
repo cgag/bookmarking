@@ -98,8 +98,8 @@
 
 (defn search-form [user-id cat-id & [query]]
   (let [search-path (str "/users/" user-id "/categories/" cat-id "/search")]
-    [:div#search-bookmarks-wrapper
-     [:ul#search-bookmarks
+    [:div.search-bookmarks-wrapper
+     [:ul.search-bookmarks
       (form-to [:get search-path]
                [:li (text-field {:placehold "E.g. lonely planet"} "query" query)]
                [:li (submit-button "Search")])]]))
@@ -128,11 +128,14 @@
 
 (declare bookmark-list bookmark-section)
 
-(defn bookmarks-section [user-id cat-id bookmarks {:keys [page per-page]}]
+(defn bookmarks-section [user-id cat-id bookmarks {:keys [query page per-page]}]
   (let [per-page (or per-page 50)
         num-pages (num-pages (count bookmarks) per-page)]
     [:div.bookmarks-wrapper
-     [:div.add-new-bookmark [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
+     [:div.controls
+      [:div.add-new-bookmark
+       [:h4 (user-link user-id "/bookmarks/new" "Add bookmark")]]
+      (search-form user-id cat-id query)]
      [:div.bookmarks  (bookmark-list bookmarks)]]))
 
 
