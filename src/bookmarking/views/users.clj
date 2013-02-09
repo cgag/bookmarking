@@ -108,9 +108,10 @@
      (for [category (cat-model/categories user-id)
            :let [cat-name (:category category)
                  cat-id   (Integer. (:category_id category))]]
-       [:li (when (= cat-id current-cat)
-              {:class "current-category"}) 
-        (link-to (url-fn user-id cat-id) cat-name)])]))
+       (link-to (url-fn user-id cat-id)
+                [:li (when (= cat-id current-cat)
+                       {:class "current-category"}) 
+                 cat-name]))]))
 
 
 (defn bookmarklet [user-id category-id]

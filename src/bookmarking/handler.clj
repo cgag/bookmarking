@@ -1,7 +1,8 @@
 (ns bookmarking.handler
   (:require [bookmarking.auth :refer [authorized-user try-user
                                       valid-id? correct-user?]]
-            [bookmarking.views.home :as home] [bookmarking.views.util :as util]
+            [bookmarking.views.home :as home]
+            [bookmarking.views.util :as util]
             [bookmarking.views.users :as users]
             [bookmarking.views.categories :as categories]
             [bookmarking.views.bookmarks :as bookmarks]
@@ -275,6 +276,6 @@
     ;force-login-https
       handler/site))
 
-(comment
-  (def server (ring-server/serve #'app {:port 3000 :join? false
-                                        :auto-reload? false})))
+(defn -main []
+  (ring-server/serve #'app {:port 3000 :join? false
+                            :auto-reload? false}))

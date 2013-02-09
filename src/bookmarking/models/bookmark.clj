@@ -78,8 +78,8 @@
                           (:id (or (url/by-url (:url uparams))
                                    (url/create! {:url (:url uparams)}))))
         new-cat-id (when (:category uparams)
-                          (:category_id (or (cat/by-name (:category uparams))
-                                            (cat/create! (:user-id params) (:category params)))))
+                     (or (:id (cat/by-name (:category uparams)))
+                         (:category_id (cat/create! (:user-id params) (:category params)))))
         uparams (dissoc uparams :category)
         uparams (if-not new-url-id
                   uparams
@@ -97,7 +97,10 @@
 (defn update! [user-id url-id params]
   (let [current-cat (:current-cat params)
         current-bm (find-bookmark user-id url-id current-cat)
-        uparams (update-params params)]
+        uparams (update-params params)
+        _ (println "current-bm: " current-bm)
+        _ (println "new params:"  uparams)
+        _ (println "merged: "     (merge current-bm uparams))]
     (update entities/bookmarks
             (where {:user_id (Integer. user-id)
                     :url_id  (Integer. url-id)
@@ -143,7 +146,9 @@
                   :category_id (Integer. cat-id)})))
 
 (declare like make-query words)
-(defn search [user-id cat-id query & [{:keys [page per-page] :or {page 1 per-page 50}}]]
+(defn search
+  "Search across all categories"
+  [user-id cat-id query & [{:keys [page per-page] :or {page 1 per-page 50}}]]
   (let [tsquery (make-query "&" query) 
         user-id (Integer. user-id)
         cat-id  (Integer. cat-id)
@@ -157,7 +162,7 @@
                         urls u
                     WHERE
                         b.user_id = ?   AND
-                        b.category_id = ? AND
+                      --  b.category_id = ? AND
                         b.url_id = u.id AND
                         ( to_tsvector(b.title) @@ to_tsquery(?)
                         OR "
@@ -165,8 +170,8 @@
                         ")")
         real-query (str "SELECT * " base-query "OFFSET ? LIMIT ?")
         count-query (str "SELECT COUNT(*) " base-query)]
-    [(exec-raw [real-query [user-id cat-id tsquery offset limit]] :results)
-     (:count (first (exec-raw [count-query [user-id cat-id tsquery]] :results)))]))
+    [(exec-raw [real-query [user-id #_cat-id tsquery offset limit]] :results)
+     (:count (first (exec-raw [count-query [user-id #_cat-id tsquery]] :results)))]))
 
 (defn words [s] (s/split s #"\s+"))
 

@@ -1,5 +1,5 @@
 (ns bookmarking.models.category
-  (:refer-clojure :exclude [name])
+  (:refer-clojure :exclude [name find])
   (:require [clojure.string :as s]
             [bookmarking.models.entities :as entities]
             [bookmarking.views.util :refer [select-field select-one]]

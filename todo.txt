@@ -55,6 +55,8 @@ DONE: add tooltip(title) for question mark icon next to bookmarklet
 
 DONE: Pagination
 
+DONE: prepopulate fields in edit bookmark form
+
 Easy way to export bookmarks
 
 Force https on login page
@@ -62,8 +64,11 @@ Force https on login page
 Make it prettier
 
 Don't let people add blank urls via "add bookmark"
-Editing a bookmarks category does nothing.
-prepopulate fields in edit bookmark form
+Editing a bookmarks category does nothing if the category already exists.
+
+The 'x' to delete links is in the wrong place if the title of the link
+spans multiple lines
+
 
 "Saving" text is correct size occassional, usually not.  Think this is related to teh fonts used on the page bookmarked maybe (google fonts?)
 
