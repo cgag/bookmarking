@@ -52,7 +52,7 @@
 ;; -- actually, the redirect goes to the standard login redirect, so maybe the unauthorized-uri doesn't get set?
 ;; TODO: stop wrapping return map in {:bookmark <>} or {:errors}, just
 ;; add key to result of create
-(defroutes strange-routes
+(defroutes create-bookmark
   (POST "/bookmarks" [user-id :as req]
     (try-user req
         (if-not user
@@ -102,8 +102,10 @@
       (bookmarks/edit user cat-id url-id)))
   (POST "/bookmarks/:url-id" [user-id url-id :as req]
     (authorized-user user-id req
-      (bm-model/update! user-id url-id (:params req))
-      (ring.util.response/redirect (str "/users/" user-id))))
+      (let [params (:params req)
+            current-cat (:current-cat params)]
+        (bm-model/update! user-id url-id params)
+        (ring.util.response/redirect (str "/users/" user-id "/categories/" current-cat)))))
   (POST "/categories/:cat-id/bookmarks/:url-id/delete" [user-id cat-id url-id :as req]
     (authorized-user user-id req
       (let [bookmark (bm-model/find-bookmark user-id url-id cat-id)]
@@ -145,7 +147,7 @@
             errors (:errors updated-cat)]
         (if errors
           (categories/edit-category user cat-id errors)
-          (ring.util.response/redirect (str "/users/" user-id "/categories"))))))
+          (ring.util.response/redirect (str "/users/" user-id "/categories/" cat-id))))))
   (POST "/categories/:cat-id/delete" [user-id cat-id :as req]
     (authorized-user user-id req
       (cat-model/delete! user-id cat-id))))
@@ -205,7 +207,7 @@
   (GET "/slow" req 
     (Thread/sleep 10000)
     (main-layout nil "Slow Page Title Woooo"
-                 [:p "BODY"])))
+      [:p "BODY"])))
 
 (defroutes boilerpipe
   (GET "/plain-text"
@@ -220,7 +222,7 @@
   public-routes
   boilerpipe
   (context ["/users/:user-id" :user-id #"[0-9]+" :cat-id #"[0-9]+"] req
-    strange-routes
+    create-bookmark
     (friend/wrap-authorize private-user-routes #{::user-model/user})
     (friend/wrap-authorize private-bookmark-routes #{::user-model/user})
     (friend/wrap-authorize private-category-routes #{::user-model/user}))
@@ -268,14 +270,24 @@
 (defonce app
   (-> #'app-routes
       (friend/authenticate {:credential-fn (partial creds/bcrypt-credential-fn user-model/credentials)
-                            :workflows [;(workflows/interactive-form :login-uri "/")
-                                        custom-workflows/registration
+                            :workflows [custom-workflows/registration
                                         custom-workflows/login] :login-uri "/login"
                             :unauthorized-handler
                             unauthorized-handler})
-    ;force-login-https
+                                        ;force-login-https
       handler/site))
 
+(def server (atom nil))
+
+(defn stop-server []
+  (when @server
+    (.stop @server)))
+
+(defn start-server []
+  (if @server
+    (println "Server already running")
+    (reset! server (ring-server/serve #'app {:port 3000 :join? false
+                                            :auto-reload? false}))))
+
 (defn -main []
-  (ring-server/serve #'app {:port 3000 :join? false
-                            :auto-reload? false}))
+  (start-server))

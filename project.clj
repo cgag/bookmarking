@@ -2,7 +2,7 @@
   :main bookmarking.handler
   :description "A simple bookmarking service inspired by Instapaper."
   :url "bookmarking.curtis.io"
-  :dependencies [[org.clojure/clojure "1.5.0-RC2"]
+  :dependencies [[org.clojure/clojure "1.5.0-RC14"]
                  [compojure "1.1.1"]
                  [cheshire "5.0.1"]
                  [enlive "1.0.1"]

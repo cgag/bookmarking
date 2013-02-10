@@ -84,11 +84,11 @@
 @btnBackgroundHighlight:            darken(@white, 10%);
 @btnBorder:                         #bbb;
 
-@btnPrimaryBackground:              @linkColor;
-@btnPrimaryBackgroundHighlight:     spin(@btnPrimaryBackground, 20%);
+@btnPrimaryBackground:              lighten(@s-base02,0%); //@linkColor;
+@btnPrimaryBackgroundHighlight:     lighten(@s-base02,0%); //lighten(@btnPrimaryBackground, 50%);
 
-@btnInfoBackground:                 #5bc0de;
-@btnInfoBackgroundHighlight:        #2f96b4;
+@btnInfoBackground:                 @s-base02;//#5bc0de;
+@btnInfoBackgroundHighlight:        @s-base02;//#2f96b4;
 
 @btnSuccessBackground:              #62c462;
 @btnSuccessBackgroundHighlight:     #51a351;
@@ -173,7 +173,7 @@
 
 // Navbar
 // -------------------------
-@navbarColor:                     #073642;
+@navbarColor:                     @s-base02;
 
 @navbarCollapseWidth:             779px;
 @navbarCollapseDesktopWidth:      @navbarCollapseWidth + 1;

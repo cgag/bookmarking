@@ -50,18 +50,32 @@ Prepopulate fields when editing links.
 
 Don't remove blank titles on edit, should go get the title
 
+DONE: Add searching for bookmarks
+DONE:  -- Need more refactoring: pagination and such shouldn't be within "display bookmarks?"A
+DONE:  -- search-results needs to take in a page number somehow (get param)
+DONE:  -- Highlight current-cat on results page
+DONE:  -- Category links should search that category when on the search results page
+
 DONE: Manage/delete categories
 DONE: add tooltip(title) for question mark icon next to bookmarklet
-
 DONE: Pagination
-
 DONE: prepopulate fields in edit bookmark form
 
+DONE: Clean up account editing form
+
 Easy way to export bookmarks
+
+clean up home page
+
+come up with a better working title than "working title"... remove
+that bit all together actually
 
 Force https on login page
 
 Make it prettier
+-- Some formatting on plain-text view
+
+extract boilerpipe stuff into its own dependency and put it on clojars
 
 Don't let people add blank urls via "add bookmark"
 Editing a bookmarks category does nothing if the category already exists.
@@ -69,14 +83,9 @@ Editing a bookmarks category does nothing if the category already exists.
 The 'x' to delete links is in the wrong place if the title of the link
 spans multiple lines
 
+Use bootstrap's pagination
 
 "Saving" text is correct size occassional, usually not.  Think this is related to teh fonts used on the page bookmarked maybe (google fonts?)
-
-DONE: Add searching for bookmarks
-DONE:  -- Need more refactoring: pagination and such shouldn't be within "display bookmarks?"A
-DONE:  -- search-results needs to take in a page number somehow (get param)
-DONE:  -- Highlight current-cat on results page
-DONE:  -- Category links should search that category when on the search results page
 
 refactor the login workflow
 

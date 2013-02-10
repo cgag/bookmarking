@@ -8,26 +8,26 @@
 
 (declare to-html)
 
-(def ^:private fake-agent "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)")
+(def ^:private user-agent "Mozilla/5.0 (Windows NT 6.1; rv:10.0) Gecko/20100101 Firefox/10.0")
 
 (def article-extractor (ArticleExtractor/getInstance))
 (def default-extractor (DefaultExtractor/getInstance))
 
 (defprotocol TextExtractor
   "Extract the text from a given source"
-  (get-text-p [source extractor]
+  (extract-text [source extractor]
     "Get text from a given source using "))
 
 (extend-protocol TextExtractor
   java.net.URL
-  (get-text-p [source extractor]
+  (extract-text [source extractor]
     (let [cookie-store (clj-http.cookies/cookie-store)
           resp    (clj-http.client/get (str source) {:cookie-store cookie-store
-                                                     :headers {"User-Agent" fake-agent}})
+                                                     :headers {"User-Agent" user-agent}})
           body-str (:body resp)]
-      (get-text-p body-str extractor)))
+      (extract-text body-str extractor)))
   Object
-  (get-text-p [source extractor]
+  (extract-text [source extractor]
     (.getText extractor source)))
 
 (defn get-text
@@ -35,7 +35,7 @@
    TODO: Checkout boilerpipe source and figure out what else"
   [source & [extractor]]
   (let [extractor (or extractor article-extractor)]
-    (get-text-p source extractor)))
+    (extract-text source extractor)))
 
 (defn get-html [source & [extractor]]
   (let [text (get-text source extractor)]

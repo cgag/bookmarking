@@ -24,15 +24,15 @@
         [bookmarks total-bms] (bm-model/bookmarks user-id cat-id {:page page :per-page per-page})
         num-pages (bm-views/num-pages total-bms per-page)]
     (main-layout user (str (:username user) "'s stuff") 
-      [:div.row
-       [:div.span12
-        [:div.pagination
-         (bm-views/bookmark-pagination-links page num-pages)]]]
+      [:div.row.dongs
+       [:div.span12.butts
+        (bm-views/bookmark-pagination-links page num-pages)]]
       [:div.row
        [:div.span9
-        (bm-views/bookmarks-section user-id cat-id bookmarks {:page page :per-page per-page})]
+        [:div.bookmark-section-left
+         (bm-views/bookmarks-section user-id cat-id bookmarks {:page page :per-page per-page})]]
        [:div.span3
-        [:div.right-col
+        [:div.bookmark-section-right
          (categories-section user-id cat-id)
          [:hr]
          (bookmarklet-section user-id cat-id)]]])))
@@ -87,14 +87,18 @@
 (defn edit [user & [errors]]
   (main-layout user "Change your password"
     (error-list errors)
-    [:div#edit-user-wrapper
+    [:div.edit-user-wrapper
      [:fieldset
-      [:legend "Password"]
-      [:ul#edit-user-form
+      [:legend "Edit Account"]
+      [:ul.edit-user-form
        (form-to [:post (str "/users/" (:id user))]
-                [:li (text-field {:placeholder "Current Password"} "current-pass") "(required)"]
+                [:li (label "current-pass" "Current Password (required)")]
+                [:li (text-field {:placeholder "Current Password"} "current-pass")]
+                [:li (label "email" "Email")]
                 [:li (text-field {:placeholder (or (:email user) "Email")} "email")]
+                [:li (label "New Password" "New Password")]
                 [:li (text-field {:placeholder "New Passwword"} "new-pass")]
+                [:li (label "new-pass-conf" "Confirm New Password")]
                 [:li (text-field {:placeholder "Confirm New Password"} "new-pass-conf")]
                 [:li (submit-button {:class "btn btn-large btn-primary"} "Save changes")])]]]))
 

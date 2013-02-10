@@ -58,6 +58,8 @@
                                   (when (and new-pass (= new-pass new-pass-conf))
                                     {:password (creds/hash-bcrypt new-pass)}))]
     (cond
+     (and new-pass
+          (not= new-pass new-pass-conf)) {:errors {:password #{"not equal to confirmation"}}}
      (email-errors updated-attributes) {:errors (email-errors updated-attributes)}
      (empty? updated-attributes)       {:errors {:nothing #{"to update"}}}
      :else updated-attributes)))

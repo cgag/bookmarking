@@ -31,9 +31,90 @@ a {
     }
 }
 
+.home-wrapper {
+    .btn {
+        border: 4px solid lighten(@s-base02, 10%);
+        width: 100%;
+    }
+}
+
+.bookmark-section-left {
+}
+.bookmark-section-right {
+    border: 3px solid green;
+    .box;
+}
+
+footer {
+    text-align: center;
+}
+
+.home-wrapper {
+    
+    padding-top: 20px;
+    height: 100%;
+
+    position: relative;
+    overflow: auto;
+    .login-form-wrapper {
+        width: 100%;
+        // float:left;
+        border: 1px solid black;
+
+        form {
+            // position: absolute;
+            input[type="submit"] {
+                bottom: 0;
+            }
+
+        }
+
+        
+        ul {
+            list-style-type: none;
+        }
+    }
+
+    .sign-up-wrapper {
+        // float:right;
+        input[type="submit"] {
+            position:relative;
+            bottom: 0;
+        }
+        ul {
+            list-style-type: none;
+        }
+    }
+}
+
+
+#sign-up-form {
+    list-style-type: none;
+}
+
+#login-form {
+}
+
+
+.edit-user-wrapper {
+    ul {
+        list-style-type: none;
+    }
+}
+
+.new-bookmark-form {
+    list-style-type: none;
+}
+
+.edit-bookmark-form {
+    list-style-type: none;
+}
+
+
 .right-col {
     .box;
 }
+
 
 .box {
     background: #fbfbfb;
@@ -61,6 +142,10 @@ ul.search-bookmarks {
     li {
         display: inline;
     }
+}
+
+.categories-wrapper {
+    .box;
 }
 
 .categories {
@@ -106,22 +191,21 @@ body {
     display: none;
 }
 
-#sign-up-form {
-    list-style-type: none;
-}
 
-#login-form {
-    list-style-type: none;
-}
-
-input.error {
-    background: #fdd;
-}
+// input.error {
+//     background: #fdd;
+// }
 
 .error-list {
+    ul {
+        list-style-type: none;
+    }
+    padding-left: 10px;
+    padding-bottom: 10px;
+    color: white;
     background: red;
-    border: 2px solid #f66;
-    background: #fdd;
+    border: 2px solid darken(@s-red, 0%); //#f66;
+    background: lighten(@s-red,10%); //#fdd;
 }
 
 .add-new-bookmark {

@@ -1,5 +1,6 @@
 (ns bookmarking.models.url
-  (:require [korma.core :refer :all]
+  (:require [clojure.string :as s]
+            [korma.core :refer :all]
             [bookmarking.models.entities :as entities]
             [validateur.validation :refer [presence-of validation-set length-of]]))
 
@@ -16,20 +17,20 @@
 (defn absolute-url
   "Ensure a url starts with http://"
   [url]
-  (if-not (re-find #"^http(s)?://" url)
-    (str "http://" url)
-    url))
+  (when (not (s/blank? url))
+    (if-not (re-find #"^http(s)?://" url)
+      (str "http://" url)
+      url)))
 
 (defn url-params [params]
-  (-> params
-    (select-keys [:url])
-    (update-in [:url] absolute-url)))
+  (if-let [url (:url params)]
+    {:url (absolute-url url)}))
 
 ;; TODO: better way to determine if already exists
 ;; TODO: shoudl all create functions have this behavior of returning the alredy existing one?  Should any?
 (defn create! [params]
   (let [uparams (url-params params)
-        errors  (validate-url uparams)]
+        errors  (and uparams (validate-url uparams))]
     (if-not (empty? errors)
       {:errors errors}
       (insert entities/urls
@@ -54,7 +55,7 @@
     [true  {}]))
 
 (def validate-url (validation-set
-                    unique-url
-                    (presence-of :url)
-                    (length-of :url :within (range 1 3000) 
-                               :allow-blank false)))
+                   (presence-of :url)
+                   (length-of :url :within (range 1 3000) 
+                              :allow-blank false)
+                   unique-url))

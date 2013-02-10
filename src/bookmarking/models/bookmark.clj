@@ -55,12 +55,12 @@
   (let [url-params (select-keys params [:url])
         url (or (url/by-url (:url url-params)) 
                 (url/create! url-params))] 
-    (if-not (empty? (:errors url))
+    (if (seq (:errors url))
       {:errors (:errors url)}
       (let [bm-params (bookmark-params params)
             bookmark  (assoc bm-params :url_id (:id url)) 
             errors    (validate-bookmark bookmark)] 
-        (if-not (empty? errors)
+        (if (seq errors)
           {:errors errors}
           (let [new-bm (insert entities/bookmarks
                                (values bookmark))]

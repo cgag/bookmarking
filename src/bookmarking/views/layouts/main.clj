@@ -25,9 +25,9 @@
   "page is used as a hidden value to identify which page the form was submitted from
   (either the home page or the registration page at the moment)"
   [page & [{:keys [errors params]}]]
-  [:div#sign-up-wrapper
+  [:div.sign-up-wrapper
    [:fieldset 
-    [:ul#sign-up-form
+    [:ul.sign-up-form
      (form-to [:post "/users"]
               [:li (text-field {:class       (error-class errors :username)
                                 :placeholder (placeholder (:username params) "username")} 
@@ -49,9 +49,9 @@
   errors, params from a failed request such as the username, and the
   referring request"
   [page & [{:keys [errors params ref-req] :as param-map}]]
-  [:div#login-form-wrapper
+  [:div.login-form-wrapper
    [:fieldset
-    [:ul#login-form
+    [:ul.login-form
      (form-to [:post "/"]
               [:li (text-field {:class (error-class errors :username)
                                 :placeholder (placeholder (:username params) "username")}
@@ -114,7 +114,9 @@
                            (login-form "home"))))))
 
 (def footer
-  [:footer "Footer goes here"])
+  [:footer.row
+   [:div.span12
+    [:div.footer (link-to "http://curtis.io" "Curtis Gagliardi")]]])
 
 ;; TODO: actually put shiv in resources or use CDN
 (def html5-shiv
@@ -177,9 +179,8 @@
     chrome-frame
     (nav user)
     [:div.container
-     [:div.row
-      content]]
-    footer
+     content
+     footer]
     (include-js "//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js")
     (include-js "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js")
     (include-js "/js/myjs.js")]))

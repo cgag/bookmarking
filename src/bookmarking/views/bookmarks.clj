@@ -49,7 +49,7 @@
 (defn edit-bookmark-form [user cat-id url-id & [{:keys [errors]}]]
   (let [user-id (:id user)
         current (bm/find-bookmark user-id url-id cat-id)]
-    [:div#edit-bookmark-wrapper
+    [:div.edit-bookmark-wrapper
      (when errors (error-list errors))
      [:ul#edit-bookmark-form
       (form-to [:post (str "/users/" user-id "/bookmarks/" url-id)]
@@ -57,11 +57,11 @@
                (bookmark-fields current))]]))
 
 (defn new-bookmark-form [user-id & [{:keys [errors] :as bm}]]
-  [:div#new-bookmark-wrapper
+  [:div.new-bookmark-wrapper
    (when errors
      (error-list errors))
    [:fieldset
-    [:ul#new-bookmark-form
+    [:ul.new-bookmark-form
      (form-to [:post (str "/users/" user-id "/bookmarks")]
               (bookmark-fields bm))]]])
 
