@@ -7923,7 +7923,10 @@ footer {
 }
 .home-wrapper .login-form-wrapper {
   width: 100%;
-  border: 1px solid black;
+}
+.home-wrapper .login-form-wrapper form {
+  position: absolute;
+  bottom: 0;
 }
 .home-wrapper .login-form-wrapper form input[type="submit"] {
   bottom: 0;
