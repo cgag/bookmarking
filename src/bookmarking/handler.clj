@@ -272,8 +272,8 @@
 (defonce app
   (-> #'app-routes
       (friend/authenticate {:credential-fn (partial creds/bcrypt-credential-fn user-model/credentials)
-                            :workflows [custom-workflows/registration
-                                        custom-workflows/login] :login-uri "/login"
+                            :workflows [#'custom-workflows/registration
+                                        #'custom-workflows/login] :login-uri "/login"
                             :unauthorized-handler
                             unauthorized-handler})
                                         ;force-login-https

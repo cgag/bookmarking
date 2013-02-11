@@ -29,9 +29,9 @@
 (defn make-user-auth [user & [opts]]
   (workflow/make-auth user
                       (merge 
-                        {::friend/workflow :interactive-form
-                         ::friend/redirect-on-auth? (str "/users/" (:identity user))}
-                        opts)))
+                       {::friend/workflow :interactive-form
+                        ::friend/redirect-on-auth? (str "/users/" (:identity user))}
+                       opts)))
 
 ;; TODO: Desperately needs refactoring
 ;; Couldn't figure out how to redirect to user's bookmarks using the interactive-form workflow
@@ -40,16 +40,16 @@
 ;; TODO: thing ref-req will never be nil, would be "nil"
 ;;
 
-;(if-not ref-req
-          ;(make-user-auth user)
-          ;(when (and (= :post (:request-method ref-req))
-                     ;(re-find #"/users/[0-9]+/bookmarks" (:uri ref-req)))
-            ;(if-not (= (:id user) (Integer. (:user-id (:params ref-req))))
-              ;(make-user-auth user)
-              ;(let [bookmark (bm-model/create! (:params ref-req))]
-                ;(if (:errors bookmark)
-                  ;(resp/render "ERROR" {})
-                  ;(make-user-auth user))))))
+                                        ;(if-not ref-req
+                                        ;(make-user-auth user)
+                                        ;(when (and (= :post (:request-method ref-req))
+                                        ;(re-find #"/users/[0-9]+/bookmarks" (:uri ref-req)))
+                                        ;(if-not (= (:id user) (Integer. (:user-id (:params ref-req))))
+                                        ;(make-user-auth user)
+                                        ;(let [bookmark (bm-model/create! (:params ref-req))]
+                                        ;(if (:errors bookmark)
+                                        ;(resp/render "ERROR" {})
+                                        ;(make-user-auth user))))))
 
 (defn login [{:keys [uri request-method params] :as request}]
   (when (and (= "/" uri)
@@ -59,15 +59,15 @@
           get-params (when (:get-params params) (read-string (util/de-entify (:get-params params))))]
       (if-let [user (and username password
                          ((:credential-fn (::friend/auth-config request))
-                            (with-meta creds {::friend/workflow ::custom-login})))]
+                          (with-meta creds {::friend/workflow ::custom-login})))]
         (if-not ref-req
           ;; TODO: need to verify user-id from get-params == the newly logged in user-id
           (if (and get-params
                    (= (Integer. (:userid get-params))
                       (:id user)))
-            (let [bm-params (set/rename-keys get-params {:userid :user-id})
-                  bookmark (bm-model/create! bm-params)
-                  _ (println "just tried to create bookmark: " bookmark)]
+            (let [bm-params (set/rename-keys get-params {:userid :user-id
+                                                         :category :category-id})
+                  bookmark (bm-model/create! bm-params)]
               (if (:erorrs bookmark)
                 (resp/render "ERROR" {})
                 (make-user-auth user {::friend/redirect-on-auth? (:url get-params)})))
@@ -89,6 +89,6 @@
                        errors)]
           (condp = (:form params)
             "home"  (resp/render (h/home  nil {:errors errors :params params :ref-req ref-req}) {})
-            ;"login" (resp/render (h/login nil {:errors errors :params params :ref-req ref-req}) {})
+                                        ;"login" (resp/render (h/login nil {:errors errors :params params :ref-req ref-req}) {})
             "login" (ring.util.response/redirect (str "/login?" (util/query-str get-params)))
             (resp/render  (h/login nil {:errors errors :params params :ref-req ref-req}) {})))))))

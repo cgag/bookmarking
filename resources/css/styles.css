@@ -7178,23 +7178,20 @@ a:hover {
   width: 220px;
 }
 footer {
+  padding-top: 10px;
   text-align: center;
 }
 .home-wrapper {
   padding-top: 20px;
   height: 100%;
 }
-.home-wrapper .login-form-wrapper {
+.login-form-wrapper {
   width: 100%;
 }
-.home-wrapper .login-form-wrapper ul {
+.login-form-wrapper ul {
   list-style-type: none;
 }
-.home-wrapper .sign-up-wrapper input[type="submit"] {
-  position: relative;
-  bottom: 0;
-}
-.home-wrapper .sign-up-wrapper ul {
+.sign-up-wrapper ul {
   list-style-type: none;
 }
 #sign-up-form {

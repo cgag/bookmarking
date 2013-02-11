@@ -19,7 +19,6 @@
 @s-cyan:      #2aa198;
 @s-green:     #859900;
 
-// @text:        #656562;
 @text:        #656562;
 
 @current-cat: @s-base1;
@@ -39,6 +38,7 @@ a {
 }
 
 footer {
+    padding-top: 10px;
     text-align: center;
 }
 
@@ -47,32 +47,28 @@ footer {
     padding-top: 20px;
     height: 100%;
 
-    // position: relative;
-    // overflow: auto;
-    .login-form-wrapper {
-        width: 100%;
+}
 
-        form {
-            // position: absolute;
-            // bottom: 0;
-            input[type="submit"] {
-            }
-        }
-        
-        ul {
-            list-style-type: none;
+.login-form-wrapper {
+    width: 100%;
+
+    form {
+        // position: absolute;
+        // bottom: 0;
+        input[type="submit"] {
         }
     }
+    
+    ul {
+        list-style-type: none;
+    }
+}
 
-    .sign-up-wrapper {
-        // float:right;
-        input[type="submit"] {
-            position:relative;
-            bottom: 0;
-        }
-        ul {
-            list-style-type: none;
-        }
+.sign-up-wrapper {
+    input[type="submit"] {
+    }
+    ul {
+        list-style-type: none;
     }
 }
 
