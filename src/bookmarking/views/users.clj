@@ -24,15 +24,16 @@
         [bookmarks total-bms] (bm-model/bookmarks user-id cat-id {:page page :per-page per-page})
         num-pages (bm-views/num-pages total-bms per-page)]
     (main-layout user (str (:username user) "'s stuff") 
-      [:div.row.dongs
-       [:div.span12.butts
-        (bm-views/bookmark-pagination-links page num-pages)]]
+      [:div.row
+       [:div.span12
+        [:div.pagination
+         (bm-views/bookmark-pagination-links page num-pages)]]]
       [:div.row
        [:div.span9
-        [:div.bookmark-section-left
+        [:div.left-col
          (bm-views/bookmarks-section user-id cat-id bookmarks {:page page :per-page per-page})]]
        [:div.span3
-        [:div.bookmark-section-right
+        [:div.right-col
          (categories-section user-id cat-id)
          [:hr]
          (bookmarklet-section user-id cat-id)]]])))
@@ -43,12 +44,13 @@
         page (or page 1)
         per-page (or per-page 50)
         query-str (str "?query=" (URLEncoder/encode query))
-        [results num-results] (bm-model/search user-id cat-id query {:page page})]
+        [results num-results] (bm-model/search user-id cat-id query {:page page})
+        num-pages (bm-views/num-pages num-results per-page)]
     (main-layout user (str "Search results for: " query)
       [:div.row
        [:div.span12
         [:div.pagination
-         (bm-views/page-links (str query-str "&page=") page (bm-views/num-pages num-results per-page))]]]
+         (bm-views/page-links (str query-str "&page=") page num-pages)]]]
       [:div.row
        [:div.span9
         (bm-views/bookmarks-section user-id cat-id results {:page page :query query})]
@@ -73,7 +75,7 @@
    (category-list user-id cat-id url-fn)
    (user-link user-id "/categories/new" "Add Category")
    [:br]
-   (user-link user-id "/categories" "Manage Categories")])
+   (user-link user-id "/categories" "Edit Categories")])
 
 (defn bookmarklet-list [user-id]
   (for [category (cat-model/categories user-id)

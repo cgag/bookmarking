@@ -2,8 +2,7 @@ DONE: Add creation time for bookmarks, and be sure to retrieve and display them 
 DONE: FIX: if you go to the homepage while logged in, none of the category links work.  Need to do a redirect or something.
 DONE: FIX: Don't repopulate the password fieldon failed logins/registrations
 DONE: Handle the case where your use the bookmarklet when your'e not logged in (no cookie set)
-DONE: FIX: Failed login loses all the get params
-DONE: Make bookmarklet work on https page... now ideae how to do this, look at instapaper, think i need to use https on my site in this case (l.protocol in instapaper bookmarklet)
+DONE: FIX: Failed login loses all the get params DONE: Make bookmarklet work on https page... now ideae how to do this, look at instapaper, think i need to use https on my site in this case (l.protocol in instapaper bookmarklet)
 
 DONE: Actually make the list of bookmarks links
 DONE: -- Add http:// if necessary (where should this occur?  probalby before saving the url)
@@ -61,14 +60,21 @@ DONE: add tooltip(title) for question mark icon next to bookmarklet
 DONE: Pagination
 DONE: prepopulate fields in edit bookmark form
 
+DONE: Don't let people add blank urls via "add bookmark"
 DONE: Clean up account editing form
+DONE: Editing a bookmarks category does nothing if the category already exists.
 
-Easy way to export bookmarks
+DONE: One of the forms on the home page disappears entirely when the
+      screen is small
 
 clean up home page
+-- Weird placement of forms
+-- Submit buttons unaligned
 
-come up with a better working title than "working title"... remove
-that bit all together actually
+Remove bullet points from sign in form on /login
+Make the bookmarklet buttons bigger
+
+Easy way to export bookmarks
 
 Force https on login page
 
@@ -76,9 +82,6 @@ Make it prettier
 -- Some formatting on plain-text view
 
 extract boilerpipe stuff into its own dependency and put it on clojars
-
-Don't let people add blank urls via "add bookmark"
-Editing a bookmarks category does nothing if the category already exists.
 
 The 'x' to delete links is in the wrong place if the title of the link
 spans multiple lines

@@ -1,6 +1,6 @@
 (ns bookmarking.views.bookmarks
   (:require [bookmarking.views.layouts.main :refer [main-layout]]
-            [bookmarking.views.util :refer [error-list user-link]]
+            [bookmarking.views.util :refer [error-list user-link encode-url]]
             [bookmarking.models.url :as url]
             [bookmarking.models.bookmark :as bm]
             [bookmarking.models.category :as cat]
@@ -65,19 +65,10 @@
      (form-to [:post (str "/users/" user-id "/bookmarks")]
               (bookmark-fields bm))]]])
 
-(defn my-encode
-  "handle stupid fucking hashbangs, there has to be a better way"
-  [url]
-  (-> url
-      cu/url
-      (update-in [:anchor] cu/url-encode)
-      str))
 
 (defn display-bookmark [bookmark]
   (let [{:keys [user_id url_id description title category_id]} bookmark
-        url (my-encode (:url (url/by-id url_id)))
-        _ (println "url_id: " url_id)
-        _ (println "Url: " url)
+        url (encode-url (:url (url/by-id url_id)))
         host (host url)]
     [:div.bookmark
      [:div.title (link-to {:class "link"} url title)

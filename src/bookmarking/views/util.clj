@@ -3,7 +3,9 @@
   (:require [clojure.string :as s]
             [hiccup.element :refer [link-to]]
             [cemerick.friend :as friend]
-            [korma.core :refer [select fields]]))
+            [cemerick.url :as cu]
+            [korma.core :refer [select fields]])
+  (:import java.net.URLEncoder))
 
 ;; TODO: I think these may not need to be macros, look into korma's select*
 (defmacro select-field [field entity & body]
@@ -48,11 +50,24 @@
     (.replace "&lt;" "<")
     (.replace "&gt;" ">")))
 
+(defn encode-vals [m]
+  (into {} (for [[k v] m]
+             [k (URLEncoder/encode v)])))
+
+(defn encode-url
+  "handle stupid fucking hashbangs, there has to be a better way"
+  [url]
+  (-> url
+      cu/url
+      (update-in [:anchor] cu/url-encode)
+      (update-in [:query] encode-vals)
+      str))
+
 (defn query-str [m]
-  (->> (for [[k v] m]
+  (->> (for [[k v] (encode-vals m)]
          (str (name k) "=" v))
-    (interpose "&")
-    (apply str)))
+       (interpose "&")
+       (apply str)))
 
 (defn empty->nil [coll]
   (when (seq coll)

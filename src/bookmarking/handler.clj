@@ -172,8 +172,10 @@
   setTimeout(clearSaveDiv, 500); 
   ")
 
+
 ;; TODO: create a logged-out redirect function and use this logic
 ;; for the strange-route as well
+;; TODO: Handle ssl-port
 (defn logged-out-js [params]
   (let [params (select-keys params [:url :userid :category :title])
         host (e/env :bm-host)
