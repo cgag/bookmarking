@@ -101,19 +101,37 @@
       1
       pages)))
 
+(defn prange [p page-range num-pages]
+  {:pre [(pos? num-pages)]}
+  (let [page-ranges (partition page-range 1 (range 1 (inc num-pages)))
+        midpoint (Math/ceil (/ page-range 2))]
+    (nth page-ranges
+        (dec (min (Math/ceil (/ p midpoint))
+                  (count page-ranges))))))
+
 (defn page-links [base-url page num-pages]
   (let [page (Integer. page)
         num-pages (Integer. num-pages)
-        page (if (> page num-pages) num-pages page)
+        page-range 5 ; show 5 page links 
+        page (min page num-pages)
         has-prev? (> page 1)
-        has-next? (< page num-pages)]
-    (seq [(if has-prev?
-            (link-to (str base-url (dec page)) "<-")
-            "<-")
-          " " page " "
-          (if has-next?
-            (link-to (str base-url (inc page)) "->")
-            "->")])))
+        has-next? (< page num-pages)
+        page-window (if (< num-pages page-range)
+                      (range 1 (inc num-pages))
+                      (prange page page-range num-pages))]
+    [:ul
+     [:li (when-not has-prev? {:class "disabled"})
+      (if has-prev?
+        (link-to (str base-url (dec page)) "«")
+        [:span "«"])]
+     (for [p page-window]
+       (if (== p page)
+         [:li.active [:span p]]
+         [:li (link-to (str base-url p) p)]))
+     [:li (when-not has-next? {:class "disabled"})
+      (if has-next?
+        (link-to (str base-url (inc page)) "»")
+        [:span "»"])]]))
 
 (def bookmark-pagination-links  (partial page-links "?page="))
 
