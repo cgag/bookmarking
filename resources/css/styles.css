@@ -5020,8 +5020,8 @@ input[type="submit"].btn.btn-mini {
   padding: 4px 12px;
   line-height: 20px;
   text-decoration: none;
-  background-color: #ffffff;
-  border: 1px solid #dddddd;
+  background-color: #fbfbfb;
+  border: 1px solid #808080;
   border-left-width: 0;
 }
 .pagination ul > li > a:hover,
@@ -7326,15 +7326,16 @@ body {
 .bookmarks-wrapper .bookmark .delete:hover {
   color: #BD0000;
 }
-a.bookmarklet {
+.bookmarklet button {
+  border: 2px solid #0c5c70;
+  width: 100px;
+  height: 30px;
+}
+.bookmarklet a {
   color: white;
   text-decoration: none;
 }
-a.bookmarklet:hover {
-  color: white;
-  text-decoration: none;
-}
-h4.bookmarklet {
+.bookmarklet-header {
   display: inline;
   padding-right: 5px;
 }

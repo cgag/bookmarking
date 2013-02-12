@@ -67,26 +67,27 @@ DONE: Editing a bookmarks category does nothing if the category already exists.
 DONE: One of the forms on the home page disappears entirely when the
       screen is small
 
-clean up home page
--- Weird placement of forms
--- Submit buttons unaligned
-
-Remove bullet points from sign in form on /login
-Make the bookmarklet buttons bigger
-
-Easy way to export bookmarks
-
-Force https on login page
+DONE: Don't ignore categories in login get-params
+DONE: Remove bullet points from sign in form on /login
+DONE: Make the bookmarklet buttons bigger
 
 Make it prettier
 -- Some formatting on plain-text view
+-- Weird placement of forms on home page
+    -- Submit buttons unaligned
 
+Use bootstrap's pagination
 extract boilerpipe stuff into its own dependency and put it on clojars
+
+Force https on login page
+Easy way to export bookmarks
+
+Make searching instant
+Add indices for search and everything else
 
 The 'x' to delete links is in the wrong place if the title of the link
 spans multiple lines
 
-Use bootstrap's pagination
 
 "Saving" text is correct size occassional, usually not.  Think this is related to teh fonts used on the page bookmarked maybe (google fonts?)
 

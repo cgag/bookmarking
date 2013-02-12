@@ -30,6 +30,9 @@ a {
     }
 }
 
+.pagination {
+}
+
 .home-wrapper {
     .btn {
         border: 4px solid lighten(@s-base02, 10%);
@@ -236,17 +239,21 @@ body {
 .bookmark-url {
 }
 
-a.bookmarklet {
-    color: white;
-    text-decoration: none;
+.bookmarklet {
+    button {
+        border: 2px solid lighten(@s-base02, 10%);
+        width: 100px;
+        height: 30px;
+    }
+    a {
+        color: white;
+        text-decoration: none;
+        &:hover {}
+    }
 }
 
-a.bookmarklet:hover {
-    color: white;
-    text-decoration: none;
-}
 
-h4.bookmarklet {
+.bookmarklet-header {
     display:inline;
     padding-right: 5px;
 }
