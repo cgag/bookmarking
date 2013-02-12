@@ -7173,6 +7173,12 @@ a {
 a:hover {
   text-decoration: none;
 }
+.pagination-wrapper .pagination span {
+  background-color: #fbfbfb;
+}
+.pagination-wrapper .pagination .disabled span {
+  background-color: #fbfbfb;
+}
 .home-wrapper .btn {
   border: 4px solid #0c5c70;
   width: 220px;

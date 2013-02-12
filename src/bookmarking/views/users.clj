@@ -26,8 +26,9 @@
     (main-layout user (str (:username user) "'s stuff") 
       [:div.row
        [:div.span12
-        [:div.pagination
-         (bm-views/bookmark-pagination-links page num-pages)]]]
+        [:div.pagination-wrapper
+         [:div.pagination
+          (bm-views/bookmark-pagination-links page num-pages)]]]]
       [:div.row
        [:div.span9
         [:div.left-col
@@ -49,8 +50,9 @@
     (main-layout user (str "Search results for: " query)
       [:div.row
        [:div.span12
-        [:div.pagination
-         (bm-views/page-links (str query-str "&page=") page num-pages)]]]
+        [:div.pagination-wrapper
+         [:div.pagination
+          (bm-views/page-links (str query-str "&page=") page num-pages)]]]]
       [:div.row
        [:div.span9
         (bm-views/bookmarks-section user-id cat-id results {:page page :query query})]

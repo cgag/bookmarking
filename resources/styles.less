@@ -22,6 +22,7 @@
 @text:        #656562;
 
 @current-cat: @s-base1;
+@box-background: #fbfbfb;
 
 a {
     color: @s-blue;
@@ -30,7 +31,17 @@ a {
     }
 }
 
-.pagination {
+.pagination-wrapper {
+    .pagination {
+        span {
+            background-color: @box-background;
+        }
+        .disabled {
+            span {
+                background-color: @box-background;
+            }
+        }
+    }
 }
 
 .home-wrapper {
@@ -56,8 +67,6 @@ footer {
     width: 100%;
 
     form {
-        // position: absolute;
-        // bottom: 0;
         input[type="submit"] {
         }
     }
@@ -108,7 +117,7 @@ footer {
 
 
 .box {
-    background: #fbfbfb;
+    background: @box-background;
     .border-radius(5px);
     border: 1px solid black;
 
@@ -149,7 +158,6 @@ ul.search-bookmarks {
     ul {
         list-style-type: none;
         padding-bottom: 10px;
-        // padding-left: 20px;
     }
 
     li {
@@ -174,18 +182,12 @@ ul.nav {
 }
 
 body {
-    // padding-top: 60px; 
     color: @text;
 }
 
 .hidden {
     display: none;
 }
-
-
-// input.error {
-//     background: #fdd;
-// }
 
 .error-list {
     ul {
@@ -195,8 +197,8 @@ body {
     padding-bottom: 10px;
     color: white;
     background: red;
-    border: 2px solid darken(@s-red, 0%); //#f66;
-    background: lighten(@s-red,10%); //#fdd;
+    border: 2px solid darken(@s-red, 0%);
+    background: lighten(@s-red,10%);
 }
 
 .add-new-bookmark {
@@ -217,7 +219,6 @@ body {
 
 .bookmarks-wrapper {
     .box;
-    // background: @s-base1;
     .bookmark {
         border-bottom: 1px solid black;
         &:last-child {
@@ -293,5 +294,3 @@ ul {
 .name {
     border: 2x solid blue;
 }
-
-// @import "bootstrap/less/responsive.less";
