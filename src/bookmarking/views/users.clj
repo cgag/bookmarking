@@ -120,7 +120,7 @@
                        {:class "current-category"}) 
                  cat-name]))]))
 
-TODO: test https with wireshark or something
+;; TODO: test https with wireshark or something
 (defn bookmarklet [user-id category-id]
   (let [host (e/env :bm-host)
         port (e/env :bm-port)

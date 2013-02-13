@@ -79,7 +79,7 @@ Make it prettier
 
 extract boilerpipe stuff into its own dependency and put it on clojars
 
-Force https on login page
+DONE: Force https on login page
 
 Get ssl cert
 
