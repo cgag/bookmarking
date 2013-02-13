@@ -235,6 +235,7 @@
 
 
 (defn original-url
+  "Build a uri from a request map, taken from somewhere I can't remember"
   [{:keys [scheme server-name server-port uri query-string]}]
   (str (name scheme) "://" server-name
        (cond
@@ -246,24 +247,21 @@
          (str \? query-string))))
 
 
-(defn force-login-https [handler]
+(defn debug-req [handler & ks]
   (fn [req]
-    (when (= (:uri req) "/login")
-      (println "in force login https middleware")
-      (println "uri: " (:uri req)) 
-      (println "scheme: " (:scheme req) ) 
-      (println "login req: " (pr-str req))) 
-    (if (and (= (:uri req) "/login")
-             (= (:scheme req) :http))
-      (do
-        (println "doing login https redirect to :" (original-url (assoc req
-                                                                   :scheme :https
-                                                                   :server-port "8443")))
-        {:status 301 :headers {"Location" 
-                               (original-url (assoc req
-                                               :scheme :https
-                                               :server-port :8443))}})
+    (do
+      (println "req: " (if ks (select-keys req ks) req))
       (handler req))))
+
+(defn force-https [handler]
+  (let [https-urls #{"/" "/login"}]
+    (fn [req]
+      (if (and (https-urls (:uri req))
+               (= (:scheme req) :http))
+        (ring.util.response/redirect (original-url (assoc req
+                                                     :scheme :https
+                                                     :server-port (e/env :bm-ssl-port))))
+        (handler req)))))
 
 (defn unauthorized-handler [& args]
   {:status 401
@@ -275,9 +273,10 @@
                             :workflows [#'custom-workflows/registration
                                         #'custom-workflows/login] :login-uri "/login"
                             :unauthorized-handler
-                            unauthorized-handler})
-                                        ;force-login-https
-      handler/site))
+                            #'unauthorized-handler})
+      force-https
+      handler/site
+      #_(#'debug-req :uri :scheme) ))
 
 (def server (atom nil))
 
@@ -289,7 +288,7 @@
   (if @server
     (println "Server already running")
     (reset! server (ring-server/serve #'app {:port 3000 :join? false
-                                            :auto-reload? false}))))
+                                             :auto-reload? false}))))
 
-(defn -main []
-  (start-server))
+;; (defn -main []
+;;   (start-server))

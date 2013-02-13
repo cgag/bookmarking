@@ -40,14 +40,14 @@ DONE: FIX:  Can't add category if it exists for ANY user.  If cat already exists
 DONE: Allow users to edit account info (email, password)
 DONE: Allow users to edit bookmarks.
 
-Pass category names in urls instead of ids.
--- dont' put /bookmarks in url, just user /categories/:cat-id
--- Make categories a part of the url:  /users/1/categories/2
+DONE: Pass category names in urls instead of ids.
+DONE: -- dont' put /bookmarks in url, just user /categories/:cat-id
+DONE: -- Make categories a part of the url:  /users/1/categories/2
 
 DONE: Redirect to users/:uid after editing a link
-Prepopulate fields when editing links.
+DONE: Prepopulate fields when editing links.
 
-Don't remove blank titles on edit, should go get the title
+DONE: Don't remove blank titles on edit, should go get the title
 
 DONE: Add searching for bookmarks
 DONE:  -- Need more refactoring: pagination and such shouldn't be within "display bookmarks?"A
@@ -70,16 +70,19 @@ DONE: One of the forms on the home page disappears entirely when the
 DONE: Don't ignore categories in login get-params
 DONE: Remove bullet points from sign in form on /login
 DONE: Make the bookmarklet buttons bigger
+DONE: Use bootstrap's pagination
 
 Make it prettier
 -- Some formatting on plain-text view
 -- Weird placement of forms on home page
     -- Submit buttons unaligned
 
-Use bootstrap's pagination
 extract boilerpipe stuff into its own dependency and put it on clojars
 
 Force https on login page
+
+Get ssl cert
+
 Easy way to export bookmarks
 
 Make searching instant
@@ -87,7 +90,6 @@ Add indices for search and everything else
 
 The 'x' to delete links is in the wrong place if the title of the link
 spans multiple lines
-
 
 "Saving" text is correct size occassional, usually not.  Think this is related to teh fonts used on the page bookmarked maybe (google fonts?)
 

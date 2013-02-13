@@ -2,7 +2,8 @@
   (:require [korma.core :refer [select modifier where insert
                                 aggregate values fields join
                                 delete dry-run order update
-                                set-fields offset limit exec-raw]]
+                                set-fields offset limit exec-raw
+                                sql-only]]
             [clojure.string :as s]
             [clojure.set :as set]
             [net.cgrand.enlive-html :as enlive]
@@ -113,9 +114,8 @@
   (let [page (Integer. page)
         per-page (Integer. per-page)]
     [(select entities/bookmarks
-             (where (merge
-                     {:user_id (Integer. user-id)}
-                     (when cat-id {:category_id (Integer. cat-id)})))
+             (where {:user_id (Integer. user-id)
+                     :category_id (Integer. cat-id)})
              (limit per-page)
              (offset (* (dec page) per-page))
              (order :created_at :DESC))
@@ -166,8 +166,8 @@
                         b.url_id = u.id AND
                         ( to_tsvector(b.title) @@ to_tsquery(?)
                         OR "
-                        (like "u.url" query)
-                        ")")
+                    (like "u.url" query)
+                    ")")
         real-query (str "SELECT * " base-query "OFFSET ? LIMIT ?")
         count-query (str "SELECT COUNT(*) " base-query)]
     [(exec-raw [real-query [user-id #_cat-id tsquery offset limit]] :results)
@@ -211,3 +211,5 @@
                         (numericality-of :user_id)
                         (numericality-of :category_id)
                         unique-bookmark))
+
+(comment (def time-query "SELECT bookmarks.* FROM bookmarks WHERE (bookmarks.user_id = 1 AND bookmarks.category_id = 1) ORDER BY bookmarks.created_at DESC LIMIT 50 OFFSET 0;"))
