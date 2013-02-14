@@ -6,12 +6,13 @@
             [bookmarking.views.users :as users]
             [bookmarking.views.categories :as categories]
             [bookmarking.views.bookmarks :as bookmarks]
+            [bookmarking.views.boilerpipe :as bp-views]
             [bookmarking.views.layouts.main :refer [main-layout]]
             [bookmarking.models.user :as user-model]
             [bookmarking.models.bookmark :as bm-model]
             [bookmarking.models.url :as url-model]
             [bookmarking.models.category :as cat-model]
-            [bookmarking.models.boilerpipe :as boilerpipe]
+            [boilerpipe-clj.core :as bp]
             [bookmarking.friend.custom-workflows :as custom-workflows]
             [compojure.core :refer :all]
             [compojure.response :as resp]
@@ -211,18 +212,19 @@
     (main-layout nil "Slow Page Title Woooo"
       [:p "BODY"])))
 
-(defroutes boilerpipe
+;; TODO: may need to call wrap-paragraphs on get-url-text
+(defroutes boilerpipe-routes
   (GET "/plain-text"
       {{:keys [url]} :params :as req}
     (try-user req
         (if url
-          (boilerpipe/get-url-text url)
-          (boilerpipe/boilerpipe-view user)))))
+          (bp/get-url-text url)
+          (bp-views/boilerpipe-form-view user)))))
 
 (defroutes app-routes
   slow-route
   public-routes
-  boilerpipe
+  boilerpipe-routes
   (context ["/users/:user-id" :user-id #"[0-9]+" :cat-id #"[0-9]+"] req
     create-bookmark
     (friend/wrap-authorize private-user-routes #{::user-model/user})
