@@ -33,7 +33,7 @@
                                 :placeholder (placeholder (:username params) "username")} 
                                "username")]
               [:li (text-field {:class       (error-class errors :email)
-                                :placeholder (placeholder (:email params) "email address")}
+                                :placeholder (placeholder (:email params) "email address (optional)")}
                                "email")]
               [:li (password-field {:class   (error-class errors :password :password_confirmation)
                                     :placeholder "password"} "password")]
