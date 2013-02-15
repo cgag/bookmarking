@@ -12,7 +12,6 @@
             [bookmarking.models.bookmark :as bm-model]
             [bookmarking.models.url :as url-model]
             [bookmarking.models.category :as cat-model]
-            [boilerpipe-clj.core :as bp]
             [bookmarking.friend.custom-workflows :as custom-workflows]
             [compojure.core :refer :all]
             [compojure.response :as resp]
@@ -218,7 +217,7 @@
       {{:keys [url]} :params :as req}
     (try-user req
         (if url
-          (bp/get-url-text url)
+          (bp-views/boilerpipe-view user url)
           (bp-views/boilerpipe-form-view user)))))
 
 (defroutes app-routes
@@ -278,7 +277,7 @@
                             #'unauthorized-handler})
       force-https
       handler/site
-      #_(#'debug-req :uri :scheme) ))
+      #_(#'debug-req :uri :scheme)))
 
 (def server (atom nil))
 

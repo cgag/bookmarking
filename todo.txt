@@ -72,6 +72,8 @@ DONE: Remove bullet points from sign in form on /login
 DONE: Make the bookmarklet buttons bigger
 DONE: Use bootstrap's pagination
 
+Make a favicon
+
 Make it prettier
 -- Some formatting on plain-text view
 -- Weird placement of forms on home page
@@ -81,7 +83,9 @@ extract boilerpipe stuff into its own dependency and put it on clojars
 
 DONE: Force https on login page
 
-Get ssl cert
+DONE: Get ssl cert
+
+Need to get lein profiles from linode and local in sync.
 
 Easy way to export bookmarks
 

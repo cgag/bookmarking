@@ -7248,6 +7248,18 @@ ul.search-bookmarks input {
 ul.search-bookmarks li {
   display: inline;
 }
+.plain-text {
+  margin-top: 20px;
+  background: #fbfbfb;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px solid black;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
 .categories-wrapper {
   background: #fbfbfb;
   -webkit-border-radius: 5px;
