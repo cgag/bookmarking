@@ -20,7 +20,7 @@
                  [com.novemberain/validateur "1.2.0"]
                  [environ "0.3.0"]
                  [clj-http "0.6.4"]
-                 [io.curtis/boilerpipe-clj "0.1.2"]
+                 [io.curtis/boilerpipe-clj "0.1.3"]
                  [ring-server "0.2.7"]]
   :dev-dependencies []
   :plugins [[lein-ring "0.7.3"]
