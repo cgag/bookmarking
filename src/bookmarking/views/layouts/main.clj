@@ -174,6 +174,7 @@
             :content "Simple asocial bookmarking service."}]
     [:meta {:name "viewport"
             :content "width=device-width, initial-scale=1.0"}]
+    [:link {:rel "icon" :type "image/ico" :href "/img/favicon.ico"}]
     (include-css "/css/styles.css")]
    [:body
     chrome-frame
