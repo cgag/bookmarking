@@ -152,7 +152,7 @@
                      :content "Simple asocial bookmarking service."}]
              [:meta {:name "viewport"
                      :content "width=device-width, initial-scale=1.0"}]
-             (include-css "/css/styles.css")]
+             (include-css "/css/styles.min.css")]
             [:body
              chrome-frame
              (nav user)
