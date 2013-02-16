@@ -23,7 +23,7 @@
         per-page 50
         [bookmarks total-bms] (bm-model/bookmarks user-id cat-id {:page page :per-page per-page})
         num-pages (bm-views/num-pages total-bms per-page)]
-    (main-layout user (str (:username user) "'s stuff") 
+    (main-layout user (str (:username user) "'s bookmarks | " cat-name) 
       [:div.row
        [:div.span12
         [:div.pagination-wrapper
