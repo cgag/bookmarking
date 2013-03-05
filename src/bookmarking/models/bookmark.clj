@@ -98,10 +98,7 @@
 (defn update! [user-id url-id params]
   (let [current-cat (:current-cat params)
         current-bm (find-bookmark user-id url-id current-cat)
-        uparams (update-params params)
-        _ (println "current-bm: " current-bm)
-        _ (println "new params:"  uparams)
-        _ (println "merged: "     (merge current-bm uparams))]
+        uparams (update-params params)]
     (update entities/bookmarks
             (where {:user_id (Integer. user-id)
                     :url_id  (Integer. url-id)
