@@ -63,13 +63,16 @@
                                                    cid "/search" query-str)))
          (bookmarklet-section user-id cat-id)]]])))
 
+
 (defn bookmarklet-section [user-id cat-id]
   (let [cat-name (cat-model/name cat-id)]
     [:div.bookmarklet-section
      [:h4.bookmarklet-header "Bookmarklet"]
      [:span.icon-question-sign {:title "Drag this to your bookmarks bar, then click it while on another site to bookmark that site."}]
      [:div.bookmarklet
-      [:button.btn.btn-primary [:a {:href (bookmarklet user-id cat-id)} cat-name]]]]))
+      [:a {:href (bookmarklet user-id cat-id)} 
+       [:label cat-name]]]]))
+
 
 (defn categories-section [user-id cat-id & [url-fn]]
   [:div.categories 
@@ -78,13 +81,6 @@
    (user-link user-id "/categories/new" "Add Category")
    [:br]
    (user-link user-id "/categories" "Edit Categories")])
-
-(defn bookmarklet-list [user-id]
-  (for [category (cat-model/categories user-id)
-        :let [cat-id (:category_id category)
-              cat-name (:category category)]]
-    [:div.bookmarklet
-     [:button [:a.bookmarklet {:href (bookmarklet user-id cat-id)} cat-name]]]))
 
 
 (defn edit [user & [errors]]

@@ -24,6 +24,8 @@
 @current-cat: @s-base1;
 @box-background: #fbfbfb;
 
+
+
 a {
     color: @s-blue;
     &:hover {
@@ -31,62 +33,72 @@ a {
     }
 }
 
+.bookmarklet-section {
+  label {
+    .btn;
+    .btn-primary;
+    border: 2px solid lighten(@s-base02, 10%);
+    width: 80px;
+    height: 20px;
+  }
+}
+
 .pagination-wrapper {
-    .pagination {
-        span {
-            background-color: @box-background;
-        }
-        .disabled {
-            span {
-                background-color: @box-background;
-            }
-        }
+  .pagination {
+    span {
+      background-color: @box-background;
     }
+    .disabled {
+      span {
+        background-color: @box-background;
+      }
+    }
+  }
 }
 
 .home-wrapper {
-    .btn {
-        border: 4px solid lighten(@s-base02, 10%);
-        width: 220px;
-    }
+  .btn {
+border: 4px solid lighten(@s-base02, 10%);
+width: 220px;
+  }
 }
 
 footer {
-    padding-top: 10px;
-    text-align: center;
+  padding-top: 10px;
+  text-align: center;
 }
 
 .home-wrapper {
-    
-    padding-top: 20px;
-    height: 100%;
+
+  padding-top: 20px;
+height: 100%;
 
 }
 
 .login-form-wrapper {
-    width: 100%;
+width: 100%;
 
-    form {
-        input[type="submit"] {
-        }
-    }
-    
-    ul {
-        list-style-type: none;
-    }
+       form {
+         input[type="submit"] {
+         }
+       }
+
+       ul {
+         list-style-type: none;
+       }
 }
 
 .sign-up-wrapper {
-    input[type="submit"] {
-    }
-    ul {
-        list-style-type: none;
-    }
+  input[type="submit"] {
+  }
+  ul {
+    list-style-type: none;
+  }
 }
 
 
 #sign-up-form {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 #login-form {
@@ -94,17 +106,17 @@ footer {
 
 
 .edit-user-wrapper {
-    ul {
-        list-style-type: none;
-    }
+  ul {
+    list-style-type: none;
+  }
 }
 
 .new-bookmark-form {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .edit-bookmark-form {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .left-col {
@@ -112,190 +124,190 @@ footer {
 }
 
 .right-col {
-    .box;
+  .box;
 }
 
 
 .box {
-    background: @box-background;
-    .border-radius(5px);
-    border: 1px solid black;
+background: @box-background;
+            .border-radius(5px);
+border: 1px solid black;
 
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
 }
 
 .controls {
-    overflow: auto;
-    width: 100%;
+overflow: auto;
+width: 100%;
 }
 
 ul.search-bookmarks {
-    list-style-type: none;
-    input
-    {
-        margin: 0;
+  list-style-type: none;
+  input
+  {
+margin: 0;
         margin-right: 3px;
-    }
-    li {
-        display: inline;
-    }
+  }
+  li {
+display: inline;
+  }
 }
 
 .plain-text {
-    margin-top: 20px;
-    .box;
+  margin-top: 20px;
+  .box;
 }
 
 .categories-wrapper {
-    .box;
+  .box;
 }
 
 .categories {
 
-    .current-category {
-        background: @current-cat; 
-        background: #eee;
-    }
+  .current-category {
+background: @current-cat; 
+background: #eee;
+  }
 
-    ul {
-        list-style-type: none;
-        padding-bottom: 10px;
-    }
+  ul {
+    list-style-type: none;
+    padding-bottom: 10px;
+  }
 
-    li {
-        &:hover {
-            background-color: #eee;
-        }
+  li {
+    &:hover {
+      background-color: #eee;
     }
+  }
 }
 
 .container-fluid {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 ul.nav {
-    li {
-        a {
-            &:hover {
-                text-decoration: underline !important;
-            }
-        }
+  li {
+    a {
+      &:hover {
+        text-decoration: underline !important;
+      }
     }
+  }
 }
 
 body {
-    color: @text;
+color: @text;
 }
 
 .hidden {
-    display: none;
+display: none;
 }
 
 .error-list {
-    ul {
-        list-style-type: none;
-    }
-    padding-left: 10px;
-    padding-bottom: 10px;
-    color: white;
-    background: red;
-    border: 2px solid darken(@s-red, 0%);
-    background: lighten(@s-red,10%);
+  ul {
+    list-style-type: none;
+  }
+  padding-left: 10px;
+  padding-bottom: 10px;
+color: white;
+background: red;
+border: 2px solid darken(@s-red, 0%);
+background: lighten(@s-red,10%);
 }
 
 .add-new-bookmark {
-    float: left;
-    p {
-        padding-top: 8px;
-    }
-    a {
-        font-size: 130%;
-        padding: 0;
-        line-height: 0;
-    }
+float: left;
+       p {
+         padding-top: 8px;
+       }
+       a {
+         font-size: 130%;
+padding: 0;
+         line-height: 0;
+       }
 }
 
 .search-bookmarks-wrapper {
-    float: right;
+float: right;
 }
 
 .bookmarks-wrapper {
-    .box;
-    .bookmark {
-        border-bottom: 1px solid black;
-        &:last-child {
-            border-bottom: none;
-        }
-        .link {}
-        .host {}
-        .delete{
-            float: right;
-            color: @s-red;
-            text-decoration: none;
-            &:hover {
-                color: #BD0000;
-            }
-        }
+  .box;
+  .bookmark {
+    border-bottom: 1px solid black;
+    &:last-child {
+      border-bottom: none;
     }
+    .link {}
+    .host {}
+    .delete{
+float: right;
+color: @s-red;
+       text-decoration: none;
+       &:hover {
+color: #BD0000;
+       }
+    }
+  }
 }
 
 .bookmark-url {
 }
 
 .bookmarklet {
-    button {
-        border: 2px solid lighten(@s-base02, 10%);
-        width: 100px;
-        height: 30px;
-    }
-    a {
-        color: white;
-        text-decoration: none;
-        &:hover {}
-    }
+  button {
+    border: 2px solid lighten(@s-base02, 10%);
+    width: 100px;
+    height: 30px;
+  }
+  a {
+    color: white;
+   text-decoration: none;
+   &:hover {}
+  }
 }
 
 
 .bookmarklet-header {
-    display:inline;
-    padding-right: 5px;
+display:inline;
+        padding-right: 5px;
 }
 
 .bm-links {
-    float: right;
+float: right;
 }
 
 ul {
-    margin: 0;
+margin: 0;
 }
 
 .bm-links ul {
-    margin: 0;
+margin: 0;
 }
 
 .bm-links li {
-    display: inline;
-    padding-left: 10px;
+display: inline;
+         padding-left: 10px;
 }
 
 .management {
-    display: inline;
+display: inline;
 }
 
 .manage-list {
-    border: 2px solid black;
+border: 2px solid black;
 }
 
 .category {
-    border-bottom: 2px solid black;
-    &:last-child {
-        border-bottom: none;
-    }
+  border-bottom: 2px solid black;
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .name {
-    border: 2x solid blue;
+border: 2x solid blue;
 }
