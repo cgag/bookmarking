@@ -214,11 +214,11 @@
 ;; TODO: may need to call wrap-paragraphs on get-url-text
 (defroutes boilerpipe-routes
   (GET "/plain-text"
-      {{:keys [url]} :params :as req}
-    (try-user req
-        (if url
-          (bp-views/boilerpipe-view user url)
-          (bp-views/boilerpipe-form-view user)))))
+       {{:keys [url]} :params :as req}
+       (try-user req
+         (if url
+           (bp-views/boilerpipe-view user url)
+           (bp-views/boilerpipe-form-view user)))))
 
 (defroutes app-routes
   slow-route

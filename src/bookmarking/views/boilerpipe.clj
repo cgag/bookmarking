@@ -10,7 +10,7 @@
     (boilerpipe-form)))
 
 (defn boilerpipe-form []
-  (form-to [:post "/boilerpipe"]
+  (form-to [:get "/plain-text"]
            (label "url" "url: ")
            (text-field "url")
            (submit-button "Get Article")))
