@@ -1,7 +1,11 @@
 (ns bookmarking.views.boilerpipe
   (:require [bookmarking.views.layouts.main :refer [main-layout]]
             [boilerpipe-clj.core :as bp]
-            [hiccup.form :refer :all]))
+            [hiccup.form :refer :all]
+            [clj-http  [client :as http]
+                       [cookies :as cookies]]))
+
+(def user-agent "Mozilla/5.0 (Windows NT 6.1; rv:10.0 Gecko/20100101 Firefox/)10.0")
 
 (declare boilerpipe-form)
 
@@ -20,4 +24,7 @@
     [:div.row
      [:div.span12
       [:div.plain-text
-       (bp/wrap-paragraphs (bp/get-url-text url))]]]))
+       (let [resp (http/get url {:cookie-stor (cookies/cookie-store)
+                                 :headers {"User-Agent" user-agent}}) 
+             text (:body resp)]
+         (bp/get-text-as-html text))]]]))

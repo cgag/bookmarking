@@ -2,7 +2,7 @@
   :main bookmarking.handler
   :description "A simple bookmarking service inspired by Instapaper."
   :url "bookmarking.curtis.io"
-  :dependencies [[org.clojure/clojure "1.5.0-RC16"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
                  [compojure "1.1.5" :exclusions [org.clojure/core.incubator
                                                  org.clojure/tools.macro
                                                  ring/ring-core]]
@@ -20,7 +20,7 @@
                  [com.novemberain/validateur "1.2.0"]
                  [environ "0.3.0"]
                  [clj-http "0.6.4"]
-                 [io.curtis/boilerpipe-clj "0.1.3"]
+                 [io.curtis/boilerpipe-clj "0.2.0"]
                  [ring-server "0.2.7"]]
   :dev-dependencies []
   :plugins [[lein-ring "0.7.3"]
