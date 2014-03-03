@@ -12,5 +12,8 @@ pom.xml
 .lein-plugins
 .lein-env
 .lobos_stash.clj
+.lein*
 bm.keystore
 nohup.out
+env.sh
+

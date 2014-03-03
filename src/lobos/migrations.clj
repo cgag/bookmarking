@@ -4,9 +4,7 @@
                    [migration :refer [defmigration]]
                    [schema :refer [table varchar index integer timestamp default unique]]
                    [helpers :refer [timestamps surrogate-key]]
-                   [config]]))
-
-;; TODO: truncate varchars that are too long?
+                   [config :refer [open-global-db!]]]))
 
 (defmigration add-table-users
   (up [] (create
@@ -64,14 +62,7 @@
   (up [] (create (index :bookmarks [:user_id :category_id])))
   (down [] (drop (index :bookmarks [:user_id :category_id]))))
 
-;; probably a better way to handle this in general, but how is this for a macro?
-(defmacro ignore-exceptions [& exprs]
-  `(do
-     ~@(for [expr exprs]
-         `(try ~expr (catch Exception e# (println e#))))))
+(defn run-migrations []
+  (binding [lobos.migration/*reload-migrations* false] 
+    (lobos.core/migrate)))
 
-(defn drop-all-tables []
-  (ignore-exceptions
-   (drop (table :bookmarks))
-   (drop (table :users))
-   (drop (table :lobos_migrations))))

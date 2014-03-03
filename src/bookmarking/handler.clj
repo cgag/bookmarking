@@ -26,7 +26,8 @@
             [cemerick.friend :as friend]
             [cemerick.friend [workflows :as workflows]
              [credentials :as creds]
-             [util :as friend-util]]))
+             [util :as friend-util]])
+  (:gen-class))
 
 (defroutes public-routes
   (GET "/" req 
@@ -173,14 +174,10 @@
   ")
 
 
-;; TODO: create a logged-out redirect function and use this logic
-;; for the strange-route as well
-;; TODO: Handle ssl-port
 (defn logged-out-js [params]
   (let [params (select-keys params [:url :userid :category :title])
         host (e/env :bm-host)
-        port (e/env :bm-port)
-        ssl-port (e/env :bm-ssl-port)]
+        port (e/env :bm-port)]
     (str "document.location=\"" 
          "http://"
          host ":" port
@@ -211,7 +208,6 @@
     (main-layout nil "Slow Page Title Woooo"
       [:p "BODY"])))
 
-;; TODO: may need to call wrap-paragraphs on get-url-text
 (defroutes boilerpipe-routes
   (GET "/plain-text"
        {{:keys [url]} :params :as req}
@@ -230,7 +226,6 @@
     (friend/wrap-authorize private-bookmark-routes #{::user-model/user})
     (friend/wrap-authorize private-category-routes #{::user-model/user}))
   bookmarklet-route
-  (GET "/test" [] "loldongssss")
   (friend/logout (ANY "/logout" req (ring.util.response/redirect "/")))
   (route/files "/" {:root "resources"}))
 
@@ -247,23 +242,6 @@
        (when (seq query-string)
          (str \? query-string))))
 
-
-(defn debug-req [handler & ks]
-  (fn [req]
-    (do
-      (println "req: " (if ks (select-keys req ks) req))
-      (handler req))))
-
-(defn force-https [handler]
-  (let [https-urls #{"/" "/login"}]
-    (fn [req]
-      (if (and (https-urls (:uri req))
-               (= (:scheme req) :http))
-        (ring.util.response/redirect (original-url (assoc req
-                                                     :scheme :https
-                                                     :server-port (e/env :bm-ssl-port))))
-        (handler req)))))
-
 (defn unauthorized-handler [& args]
   {:status 401
    :body "Access denied."})
@@ -272,12 +250,11 @@
   (-> #'app-routes
       (friend/authenticate {:credential-fn (partial creds/bcrypt-credential-fn user-model/credentials)
                             :workflows [#'custom-workflows/registration
-                                        #'custom-workflows/login] :login-uri "/login"
+                                        #'custom-workflows/login] 
+                            :login-uri "/login"
                             :unauthorized-handler
                             #'unauthorized-handler})
-      force-https
-      handler/site
-      #_(#'debug-req :uri :scheme)))
+      handler/site))
 
 (def server (atom nil))
 
@@ -288,8 +265,8 @@
 (defn start-server []
   (if @server
     (println "Server already running")
-    (reset! server (ring-server/serve #'app {:port 3000 :join? false
-                                             :auto-reload? false}))))
-
-;; (defn -main []
-;;   (start-server))
+    (reset! server (ring-server/serve #'app {:port 3000 
+                                             :join? false}))))
+(defn -main []
+  (println "env: " (e/env :test))
+  (start-server))

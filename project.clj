@@ -25,4 +25,4 @@
   :dev-dependencies []
   :plugins [[lein-ring "0.7.3"]
             [lein-cljsbuild "0.2.10"]]
-  :profiles {:dev {:dependencies [[ring-mock "0.1.3"]]}})
+  :aot :all)

@@ -1,12 +1,15 @@
 (ns tasks.db
   (:require [korma.core :refer :all]
-            [lobos [core    :refer [migrate rollback]]
-                   [config]]
+            [lobos 
+             [core    :refer [migrate rollback]]
+             [config  :refer [open-global-db!]]
+             [migrations :refer [run-migrations]]] 
             [bookmarking.models.entities :as entities]
             [bookmarking.models.bookmark :as bookmark]
             [bookmarking.models.user     :as user]
             [bookmarking.models.url      :as url]
-            [cemerick.friend [credentials :as creds]]))
+            [cemerick.friend [credentials :as creds]])
+  (:gen-class))
 
 (defmacro with-probability [p & body]
   `(when (< (rand-int 100) (* 100 ~p))
@@ -94,16 +97,14 @@
   (add-urls (into (junk-urls 300 urls) urls))
   (add-bookmarks ["guest"] (into urls (junk-urls 300 urls)) [1 2 3]))
 
-(defn clear [])
-
 (defn rebuild []
+  (open-global-db!)
   (rollback :all)
-  (migrate))
+  (run-migrations))
 
 (def task-map
   {"seed" seed
    "seed-prod" seed-prod
-   "clear" clear
    "rebuild" rebuild})
 
 (defn -main [& tasks]

@@ -2,4 +2,5 @@
   (:require [lobos.connectivity :as conn]
             [bookmarking.env :as env]))
 
-(conn/open-global env/db-map)
+(defn open-global-db! []
+  (conn/open-global env/db-map))

@@ -120,7 +120,7 @@
 (defn bookmarklet [user-id category-id]
   (let [host (e/env :bm-host)
         port (e/env :bm-port)
-        ssl-port (e/env :bm-ssl-port)]
+        ssl-port 443]
     (str "javascript:(function(){
          var newScript = document.createElement('scr' + 'ipt');
          var url = encodeURIComponent(document.location.href);
