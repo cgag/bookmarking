@@ -1,5 +1,4 @@
-(ns bookmarking.handler
-  (:require [bookmarking.auth :refer [authorized-user try-user
+(ns bookmarking.handler (:require [bookmarking.auth :refer [authorized-user try-user
                                       valid-id? correct-user?]]
             [bookmarking.views.home :as home]
             [bookmarking.views.util :as util]
@@ -266,7 +265,8 @@
   (if @server
     (println "Server already running")
     (reset! server (ring-server/serve #'app {:port 3000 
-                                             :join? false}))))
+                                             :join? false
+                                             :open-browser? false}))))
 (defn -main []
   (println "env: " (e/env :test))
   (start-server))
